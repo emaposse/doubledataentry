@@ -7,7 +7,7 @@
 	<name>${project.parent.name}</name>
 	<version>${project.parent.version}</version>
 	<package>org.openmrs.module.doubledataentry</package>
-	<author>mhawilamhawila</author>
+	<author>Willa Mhawila</author>
 	<description>
 			${project.parent.description}
 	</description>
