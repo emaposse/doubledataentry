@@ -11,4 +11,11 @@
 	<packaging>jar</packaging>
 	<name>Double Data Entry API</name>
 	<description>API project for Double Data Entry</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>htmlformentry-omod</artifactId>
+		</dependency>
+	</dependencies>
 </project>

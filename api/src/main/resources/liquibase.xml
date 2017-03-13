@@ -163,7 +163,7 @@
             <column name="time_prompted" type="datetime">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="user" type="int">
+            <column name="user_id" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="html_form_id" type="int">
@@ -175,11 +175,11 @@
         </createTable>
         <addForeignKeyConstraint constraintName="doubledataentry_prompt_form_fk" baseTableName="doubledataentry_prompt"
                                  baseColumnNames="html_form_id"  referencedTableName="htmlformentry_html_form" referencedColumnNames="id"/>
-        <addForeignKeyConstraint constraintName="doubledataentry_prompt_creator_fk" baseTableName="doubledataentry_prompt"
-                                 baseColumnNames="user"  referencedTableName="users" referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint constraintName="doubledataentry_prompt_user_fk" baseTableName="doubledataentry_prompt"
+                                 baseColumnNames="user_id"  referencedTableName="users" referencedColumnNames="user_id"/>
     </changeSet>
 
-    <changeSet id="doubledataentry_participant_create_table_2017-03-13-12:18CST" author="Willa">
+    <changeSet id="doubledataentry_participant_2017-03-13-12:18CST" author="Willa">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="doubledataentry_participant"/></not>
         </preConditions>
@@ -187,11 +187,11 @@
             Creating the doubledataentry_participant table
         </comment>
         <createTable tableName="doubledataentry_participant">
-            <column name="user" type="int" autoIncrement="true">
+            <column name="user_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
         </createTable>
         <addForeignKeyConstraint constraintName="doubledataentry_participant_creator_fk" baseTableName="doubledataentry_participant"
-                                 baseColumnNames="user"  referencedTableName="users" referencedColumnNames="user_id"/>
+                                 baseColumnNames="user_id"  referencedTableName="users" referencedColumnNames="user_id"/>
     </changeSet>
 </databaseChangeLog>
