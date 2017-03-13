@@ -12,28 +12,186 @@
         See http://www.liquibase.org/manual/home#available_database_refactorings
         for a list of supported elements and attributes
     -->
- 
- 	<!-- Uncomment the changeset below if you want to make the Item class persistable, see also Item and DoubleDataEntryDaoTest -->
- 	<!--
-	<changeSet id="doubledataentry-2016-08-02-12-21" author="raff">
-		<preConditions onFail="MARK_RAN">
-			<not><tableExists tableName="doubledataentry_item"/></not>
-		</preConditions>
-		<comment>
-			Creating the doubledataentry_item table
-		</comment>
-		<createTable tableName="doubledataentry_item">
-			<column name="doubledataentry_item_id" type="int" autoIncrement="true">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-			<column name="uuid" type="char(38)">
-				<constraints nullable="false" unique="true"></constraints>
-			</column>
-			<column name="owner" type="int" />
-			<column name="description" type="varchar(255)" />
-		</createTable>
-        <addForeignKeyConstraint constraintName="doubledataentry_item_owner_fk" baseTableName="doubledataentry_item" baseColumnNames="owner"  referencedTableName="users"
-                                 referencedColumnNames="user_id" />
-    </changeSet> -->
- 
+
+    <changeSet id="doubledataentry_configuration_2017-03-10-17:17CST" author="Willa">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="doubledataentry_configuration"/></not>
+        </preConditions>
+        <comment>
+            Creating the doubledataentry_configuration table
+        </comment>
+        <createTable tableName="doubledataentry_configuration">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="html_form_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="int" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="frequency" type="float" defaultValueNumeric="0.1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="published" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator" type="int" defaultValueNumeric="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="date_created" type="datetime" defaultValueDate="0000-00-00 00:00:00">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="changed_by" type="int"/>
+
+            <column name="date_changed" type="datetime"/>
+
+            <column name="retired" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired_by" type="int"/>
+            <column name="retire_reason" type="varchar(255)" />
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true"></constraints>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="doubledataentry_configuration_form_fk" baseTableName="doubledataentry_configuration"
+                                 baseColumnNames="html_form_id"  referencedTableName="htmlformentry_html_form" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="doubledataentry_configuration_creator_fk" baseTableName="doubledataentry_configuration"
+                                 baseColumnNames="creator"  referencedTableName="users" referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint constraintName="doubledataentry_configuration_changed_by_fk" baseTableName="doubledataentry_configuration"
+                                 baseColumnNames="changed_by"  referencedTableName="users" referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint constraintName="doubledataentry_configuration_retired_by_fk" baseTableName="doubledataentry_configuration"
+                                 baseColumnNames="retired_by"  referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+
+    <changeSet id="doubledataentry_discrepancy_2017-03-13-12:18CST" author="Willa">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="doubledataentry_discrepancy"/></not>
+        </preConditions>
+        <comment>
+            Creating the doubledataentry_discrepancy table
+        </comment>
+        <createTable tableName="doubledataentry_discrepancy">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="html_form_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="question" type="int" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="initial_answer" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="second_answer" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chosen_answer" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="answer_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator" type="int" defaultValueNumeric="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="provider_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_id" type="int"/>
+            <column name="encounter_id" type="int"/>
+            <column name="date_recorded" type="datetime" defaultValueDate="0000-00-00 00:00:00">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true"></constraints>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="doubledataentry_discrepancy_form_fk" baseTableName="doubledataentry_discrepancy"
+                                 baseColumnNames="html_form_id"  referencedTableName="htmlformentry_html_form" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="doubledataentry_discrepancy_creator_fk" baseTableName="doubledataentry_discrepancy"
+                                 baseColumnNames="creator"  referencedTableName="users" referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint constraintName="doubledataentry_discrepancy_question_fk" baseTableName="doubledataentry_discrepancy"
+                                 baseColumnNames="question"  referencedTableName="concept" referencedColumnNames="concept_id"/>
+        <addForeignKeyConstraint constraintName="doubledataentry_discrepancy_provider_fk" baseTableName="doubledataentry_discrepancy"
+                                 baseColumnNames="provider_id"  referencedTableName="provider" referencedColumnNames="provider_id"/>
+        <addForeignKeyConstraint constraintName="doubledataentry_discrepancy_location_fk" baseTableName="doubledataentry_discrepancy"
+                                 baseColumnNames="location_id"  referencedTableName="location" referencedColumnNames="location_id"/>
+        <addForeignKeyConstraint constraintName="doubledataentry_discrepancy_encounter_fk" baseTableName="doubledataentry_discrepancy"
+                                 baseColumnNames="encounter_id"  referencedTableName="encounter" referencedColumnNames="encounter_id"/>
+    </changeSet>
+
+    <changeSet id="doubledataentry_config_rev_2017-03-13-12:30CST" author="Willa">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="doubledataentry_configuration_revision"/></not>
+        </preConditions>
+        <comment>
+            Creating the doubledataentry_configuration_revision table
+        </comment>
+        <createTable tableName="doubledataentry_configuration_revision">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="configuration_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="frequency" type="float">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="doubledataentry_configuration_revision_form_fk" baseTableName="doubledataentry_configuration_revision"
+                                 baseColumnNames="configuration_id"  referencedTableName="doubledataentry_configuration" referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="doubledataentry_prompt_2017-03-13-12:35CST" author="Willa">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="doubledataentry_prompt"/></not>
+        </preConditions>
+        <comment>
+            Creating the doubledataentry_prompt table
+        </comment>
+        <createTable tableName="doubledataentry_prompt">
+            <column name="time_prompted" type="datetime">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="html_form_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true"></constraints>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="doubledataentry_prompt_form_fk" baseTableName="doubledataentry_prompt"
+                                 baseColumnNames="html_form_id"  referencedTableName="htmlformentry_html_form" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="doubledataentry_prompt_creator_fk" baseTableName="doubledataentry_prompt"
+                                 baseColumnNames="user"  referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+
+    <changeSet id="doubledataentry_participant_create_table_2017-03-13-12:18CST" author="Willa">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="doubledataentry_participant"/></not>
+        </preConditions>
+        <comment>
+            Creating the doubledataentry_participant table
+        </comment>
+        <createTable tableName="doubledataentry_participant">
+            <column name="user" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="doubledataentry_participant_creator_fk" baseTableName="doubledataentry_participant"
+                                 baseColumnNames="user"  referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
 </databaseChangeLog>
