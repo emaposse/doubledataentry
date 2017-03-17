@@ -21,13 +21,27 @@ public class Configuration extends BaseOpenmrsMetadata{
     private HtmlForm htmlForm;
 
     @Column
-    private Integer revision;
+    private Integer revision = 1;
 
     @Column
     private Float frequency;
 
     @Column
-    private Boolean published;
+    private Boolean published = false;
+
+    public Configuration() {
+    }
+
+    public Configuration(HtmlForm htmlForm, Float frequency) {
+        this.htmlForm = htmlForm;
+        this.frequency = frequency;
+    }
+
+    public Configuration(HtmlForm htmlForm, Float frequency, Boolean published) {
+        this.htmlForm = htmlForm;
+        this.frequency = frequency;
+        this.published = published;
+    }
 
     @Override
     public Integer getId() {
