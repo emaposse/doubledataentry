@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <form form_id="1" name="Test form" version="1.0" build="1" published="true" description="A form for testing" encounter_type="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+    <form form_id="2" name="Form two" version="1.0" build="1" published="true" description="A form for testing" encounter_type="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+    <htmlformentry_html_form id="1" form_id="1" xml_data="junk" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="12e41146-e162-11df-9195-001e378eb67e"/>
+    <htmlformentry_html_form id="2" form_id="2" xml_data="junk" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="16914264-e162-11df-9195-001e378eb67e"/>
+    <doubledataentry_configuration id="1" name="configuration" html_form_id="1" revision="1" frequency="0.2" published="true" creator="1"
+                   date_created="2017-03-16 17:08:09" retired="false" uuid="a7a41f9d-0b38-11e7-b6f1-0242ac110002"/>
+    <doubledataentry_configuration id="2" name="configuration" html_form_id="2" revision="2" frequency="0.2" published="false" creator="1"
+                   date_created="2017-02-20 17:10:09" changed_by="1" date_changed="2017-03-16 12:12:10"
+                   retired="false" uuid="c2817993-0b38-11e7-b6f1-0242ac110002"/>
+    <doubledataentry_configuration_revision id="1" configuration_id="2" start_date="2017-02-20 17:10:09" end_date="2017-03-16 12:12:00"
+                            frequency="0.1" />
+</dataset>

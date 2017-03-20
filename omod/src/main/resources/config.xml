@@ -84,8 +84,6 @@
 	</servlet>
 	-->
 	<!-- /Servlets -->
-	
-	
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
 	<messages>

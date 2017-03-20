@@ -34,6 +34,49 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>org.openmrs.api</groupId>
+				<artifactId>openmrs-api</artifactId>
+				<version>${openmrsPlatformVersion}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.api</groupId>
+				<artifactId>openmrs-api</artifactId>
+				<version>${openmrsPlatformVersion}</version>
+				<classifier>tests</classifier>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.test</groupId>
+				<artifactId>openmrs-test</artifactId>
+				<type>pom</type>
+				<version>${openmrsPlatformVersion}</version>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<artifactId>mockito-all</artifactId>
+						<groupId>org.mockito</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.web</groupId>
+				<artifactId>openmrs-web</artifactId>
+				<version>${openmrsPlatformVersion}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>htmlformentry-api</artifactId>
+				<version>3.3.0</version>
+			</dependency>
+			<!--<dependency>-->
+				<!--<groupId>org.openmrs.module</groupId>-->
+				<!--<artifactId>htmlformentry-api-tests</artifactId>-->
+				<!--<version>3.3.0</version>-->
+				<!--<scope>test</scope>-->
+			<!--</dependency>-->
+			<dependency>
 				<groupId>org.openmrs.module</groupId>
 				<artifactId>htmlformentry-omod</artifactId>
 				<version>3.3.0</version>

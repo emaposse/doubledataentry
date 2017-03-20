@@ -160,6 +160,9 @@
             Creating the doubledataentry_prompt table
         </comment>
         <createTable tableName="doubledataentry_prompt">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
             <column name="time_prompted" type="datetime">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
