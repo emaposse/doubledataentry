@@ -9,14 +9,14 @@
  */
 package org.openmrs.module.doubledataentry.api.dao;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
-import org.openmrs.api.UserService;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.doubledataentry.Item;
+import org.openmrs.module.htmlformentry.HtmlForm;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.hamcrest.Matchers.*;
+
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 /**
@@ -30,29 +30,26 @@ public class DoubleDataEntryDaoTest extends BaseModuleContextSensitiveTest {
 	@Autowired
 	DoubleDataEntryDao dao;
 	
-	@Autowired
-	UserService userService;
+	private static final String datasetFileName = "test-data.xml";
+	
+	@Before
+	public void setup() throws Exception {
+		executeDataSet(datasetFileName);
+	}
 	
 	@Test
-	@Ignore("Unignore if you want to make the Item class persistable, see also Item and liquibase.xml")
-	public void saveItem_shouldSaveAllPropertiesInDb() {
-		//Given
-		Item item = new Item();
-		item.setDescription("some description");
-		item.setOwner(userService.getUser(1));
+	public void searchHtmlForms_shouldSearchHtmlFormsNames() throws Exception {
+		List<HtmlForm> forms = dao.searchHtmlForms("two");
 		
-		//When
-		dao.saveItem(item);
+		assertNotNull("forms should be null", forms);
+		assertTrue(forms.size() > 0);
+		assertTrue("The form with two in it should be in results", forms.get(0).getForm().getName().contains("two"));
+	}
+	
+	@Test
+	public void searchHtmlFormls_shouldReturnEmptyListIfNothingFound() throws Exception {
+		List<HtmlForm> forms = dao.searchHtmlForms("xyz  two dalkd  d79ld");
 		
-		//Let's clean up the cache to be sure getItemByUuid fetches from DB and not from cache
-		Context.flushSession();
-		Context.clearSession();
-		
-		//Then
-		Item savedItem = dao.getItemByUuid(item.getUuid());
-		
-		assertThat(savedItem, hasProperty("uuid", is(item.getUuid())));
-		assertThat(savedItem, hasProperty("owner", is(item.getOwner())));
-		assertThat(savedItem, hasProperty("description", is(item.getDescription())));
+		assertTrue("The list should be empty", forms.size() == 0);
 	}
 }

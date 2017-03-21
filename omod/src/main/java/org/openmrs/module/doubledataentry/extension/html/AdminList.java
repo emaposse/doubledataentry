@@ -43,9 +43,9 @@ public class AdminList extends AdministrationSectionExt {
 		
 		Map<String, String> map = new HashMap<String, String>();
 		
-		map.put("module/doubledataentry/manage-configurations.form", "doubledataentry.manage.configurations");
-		map.put("module/doubledataentry/discrepancy-reports.form", "doubledataentry.discrepancy.reports");
-		map.put("module/doubledataentry/discrepancy-details.list", "doubledataentry.discrepancy.details");
+		map.put("module/doubledataentry/configuration/manage.form", "doubledataentry.manage.configurations");
+		map.put("module/doubledataentry/discrepancy/reports.form", "doubledataentry.discrepancy.reports");
+		map.put("module/doubledataentry/discrepancy/details.list", "doubledataentry.discrepancy.details");
 		
 		return map;
 	}

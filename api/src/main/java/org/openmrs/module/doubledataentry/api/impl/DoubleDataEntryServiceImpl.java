@@ -9,12 +9,13 @@
  */
 package org.openmrs.module.doubledataentry.api.impl;
 
-import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.doubledataentry.Item;
 import org.openmrs.module.doubledataentry.api.DoubleDataEntryService;
 import org.openmrs.module.doubledataentry.api.dao.DoubleDataEntryDao;
+import org.openmrs.module.htmlformentry.HtmlForm;
+
+import java.util.List;
 
 public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements DoubleDataEntryService {
 	
@@ -37,16 +38,7 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 	}
 	
 	@Override
-	public Item getItemByUuid(String uuid) throws APIException {
-		return dao.getItemByUuid(uuid);
-	}
-	
-	@Override
-	public Item saveItem(Item item) throws APIException {
-		if (item.getOwner() == null) {
-			item.setOwner(userService.getUser(1));
-		}
-		
-		return dao.saveItem(item);
+	public List<HtmlForm> searchHtmlFormsByName(final String search) {
+		return dao.searchHtmlForms(search);
 	}
 }

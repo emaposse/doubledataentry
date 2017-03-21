@@ -9,16 +9,13 @@
  */
 package org.openmrs.module.doubledataentry.api.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.doubledataentry.Configuration;
-import org.openmrs.module.doubledataentry.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import sun.security.krb5.Config;
 
 @Repository("doubledataentry.ConfigurationDao")
 public class ConfigurationDao {

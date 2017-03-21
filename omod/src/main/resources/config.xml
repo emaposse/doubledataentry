@@ -38,44 +38,21 @@
 	 /AOP -->
 	
 	
-	<!-- Required Privileges 
 	<privilege>
-		<name>Form Entry</name>
-		<description>Allows user to access Form Entry pages/functions</description>
+		<name>Manage DDE Configurations</name>
+		<description>Allows user to access and manipulate Double Data Entry Module configuration page</description>
 	</privilege>
-	 /Required Privileges -->
 
 
-	<!-- Required Global Properties 
 	<globalProperty>
-		<property>@MODULE_ID@.someProperty</property>
-		<defaultValue></defaultValue>
+		<property>@MODULE_ID@.default.frequency</property>
+		<defaultValue>0.1</defaultValue>
 		<description>
-			A description of the global property goes here.  The description
-			should explain enough for administrators to understand the purpose
-			and possible values for the global property.
+			The default value for the frequency for which the data entry clerks will be prompted to enter data twice.
+			Chosen is 10% (i.e. 0.1).
 		</description>
 	</globalProperty>
-	/Required Global Properties -->
-	
-	<!--
-	<dwr>
-		<allow>
-			<create creator="new" javascript="DWRFormEntryService">
-				<param name="class" value="org.openmrs.module.@MODULE_ID@.web.DWRFormEntryService"/>
-				<include method="enterForm"/>
-			</create>
-		</allow>
 
-		<signatures>
-			<![CDATA[
-			import @MODULE_PACKAGE@.web.DWRFormEntryService;
-			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
-			]]>
-		</signatures>	
-	</dwr>
-	-->
-	
 	<!-- Servlets -->
 	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> 
 	<servlet>

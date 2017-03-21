@@ -18,4 +18,6 @@ import org.springframework.stereotype.Component;
 public class DoubleDataEntryConfig {
 	
 	public final static String MODULE_PRIVILEGE = "Double Data Entry Privilege";
+	
+	public final static String MANAGE_CONFIGURATION_PRIVILEGE = "Manage DDE Configurations";
 }

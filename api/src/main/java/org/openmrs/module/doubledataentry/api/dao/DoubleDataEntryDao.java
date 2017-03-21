@@ -9,12 +9,16 @@
  */
 package org.openmrs.module.doubledataentry.api.dao;
 
+import org.hibernate.Criteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.doubledataentry.Item;
+import org.openmrs.module.htmlformentry.HtmlForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository("doubledataentry.DoubleDataEntryDao")
 public class DoubleDataEntryDao {
@@ -26,12 +30,10 @@ public class DoubleDataEntryDao {
 		return sessionFactory.getCurrentSession();
 	}
 	
-	public Item getItemByUuid(String uuid) {
-		return (Item) getSession().createCriteria(Item.class).add(Restrictions.eq("uuid", uuid)).uniqueResult();
-	}
-	
-	public Item saveItem(Item item) {
-		getSession().saveOrUpdate(item);
-		return item;
+	public List<HtmlForm> searchHtmlForms(final String search) {
+		Criteria c = getSession().createCriteria(HtmlForm.class).createCriteria("form")
+		        .add(Restrictions.ilike("name", search, MatchMode.ANYWHERE));
+		
+		return (List<HtmlForm>) c.list();
 	}
 }
