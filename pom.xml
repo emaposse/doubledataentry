@@ -68,7 +68,8 @@
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
 				<artifactId>htmlformentry-api</artifactId>
-				<version>3.3.0</version>
+				<version>${htmlFormEntryVersion}</version>
+				<scope>provided</scope>
 			</dependency>
 			<!--<dependency>-->
 				<!--<groupId>org.openmrs.module</groupId>-->
@@ -79,7 +80,7 @@
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
 				<artifactId>htmlformentry-omod</artifactId>
-				<version>3.3.0</version>
+				<version>${htmlFormEntryVersion}</version>
 				<scope>provided</scope>
 			</dependency>
 		</dependencies>
@@ -111,5 +112,6 @@
 
     <properties>
         <openmrsPlatformVersion>1.11.6</openmrsPlatformVersion>
+		<htmlFormEntryVersion>3.3.0</htmlFormEntryVersion>
     </properties>
 </project>

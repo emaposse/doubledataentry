@@ -14,8 +14,18 @@
     function doubleDataEntryfetchForms(pageContext, searchText) {
         console.log('fetcher is called');
         var url = pageContext + '/ws/module/doubledataentry/configuration/forms?search=' + searchText;
-        jQuery.getJSON(url, function(data) {
-            console.log(data);
+        $j.ajax({
+            /*accepts: {
+                json: 'application/json',
+            },
+            contentType: 'application/json',*/
+            url: url,
+            success: function(data) {
+                console.log('data: ', data);
+            },
+            error: function(jqXHR, textStatus, error) {
+                console.log('Status ni:', textStatus, 'Error ni:', error);
+            }
         });
     }
 

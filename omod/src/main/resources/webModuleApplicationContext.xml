@@ -24,6 +24,15 @@
 
 	<context:component-scan base-package="org.openmrs.module.doubledataentry.web.controller" />
 
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+			</list>
+		</property>
+	</bean>
+
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/module/htmlformentry/htmlFormEntry" />

@@ -25,11 +25,15 @@
 		<class>org.openmrs.module.doubledataentry.extension.html.AdminList</class>
 	</extension>
 
+	<require_modules>
+		<require_module>org.openmrs.module.htmlformentry</require_module>
+	</require_modules>
+
 	<aware_of_modules>
 		<aware_of_module>org.openmrs.module.legacyui</aware_of_module>
 	</aware_of_modules>
 	
-	
+
 	<!-- AOP
 	<advice>
 		<point>org.openmrs.api.FormService</point>

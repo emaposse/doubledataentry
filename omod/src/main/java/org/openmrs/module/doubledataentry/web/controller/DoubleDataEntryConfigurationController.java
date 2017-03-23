@@ -16,6 +16,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.module.doubledataentry.DoubleDataEntryConstants;
 import org.openmrs.module.doubledataentry.api.DoubleDataEntryService;
+import org.openmrs.module.doubledataentry.web.RestUtils;
 import org.openmrs.module.htmlformentry.HtmlForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,7 +28,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 @Controller("doubledataentry.ConfigurationController")
 @RequestMapping(value = "/module/doubledataentry/configuration")
@@ -62,8 +67,7 @@ public class DoubleDataEntryConfigurationController {
 	@RequestMapping(value = "forms")
 	@ResponseBody
 	public Object searchForms(@RequestParam("search") String search) {
-		List<HtmlForm> forms = ddeService.searchHtmlFormsByName(search);
-		return forms;
+		return convertListOfHtmlFormsToListOfMaps(ddeService.searchHtmlFormsByName(search));
 	}
 	
 	/**
@@ -80,4 +84,12 @@ public class DoubleDataEntryConfigurationController {
 		return users;
 	}
 	
+	protected List<Map<String, Object>> convertListOfHtmlFormsToListOfMaps(List<HtmlForm> htmlForms) {
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		
+		for (HtmlForm f : htmlForms) {
+			list.add(RestUtils.convertHtmlFormToMap(f));
+		}
+		return list;
+	}
 }
