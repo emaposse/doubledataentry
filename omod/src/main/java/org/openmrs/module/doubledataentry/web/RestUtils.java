@@ -41,6 +41,8 @@ public class RestUtils {
 		ret.put("revision", configuration.getRevision());
 		ret.put("published", configuration.getPublished());
 		ret.put("retired", configuration.getRetired());
+		ret.put("dateCreated", configuration.getDateCreated());
+		ret.put("dateChanged", configuration.getDateChanged());
 		ret.put("uuid", configuration.getUuid());
 		
 		return ret;

@@ -52,7 +52,49 @@
             data: JSON.stringify(createConfigObjects()),
             success: function(createdConfigs) {
                 console.log("Returned: ", JSON.stringify(createdConfigs, null, 2));
+                $j('#unsaved-configuration-table > tbody').empty();
+                formsTobeConfigured = [];
+                $j('#unsaved-config-container').hide();
 
+                // Append to configs
+                var configTableBody = $j('#configuration-table > tbody');
+                createdConfigs.forEach(function(configuration) {
+                    var tableRow = $j('<tr>');
+                    var html = '<td><input type="checkbox" name="toBeModified[]" value="' + configuration.id + '" class="form-check"/></td>' +
+                          '<td>' + configuration.htmlForm.name + '</td>' +
+                          '<td>' + configuration.revision + '</td>' +
+                          '<td><input type="text" name="configFrequency[]" value="' + configuration.frequency + '" class="form-control"/></td>';
+
+                    if(configuration.dateChanged) {
+                          html += '<td>' + (new Date(configuration.dateChanged)).toISOString() + '</td>';
+                    }
+                    else {
+                          html += '<td>' + (new Date(configuration.dateCreated)).toISOString(); + '</td>';
+                    }
+
+                    if(configuration.published) {
+                        html += '<td><input type="checkbox" name="published[]" class="form-check" checked ' +
+                                   'value="' + configuration.id + '"/></td>';
+                    }
+                    else {
+                        html += '<td><input type="checkbox" name="published[]" class="form-check" ' +
+                                    'value="' + configuration.id + '"/></td>';
+                    }
+
+                    if(configuration.revision > 1){
+                        html += '<td><a>View History</a><td>';
+                    }
+                    else {
+                        html += '<td></td>';
+                    }
+
+                    tableRow.html(html).prependTo(configTableBody);
+
+                    if(!$j('#configuration-container').is(':visible')) {
+                        $j('#configuration-container').show();
+                        $j('#no-configuration-message').hide();
+                    }
+                });
             },
             error: function(jqXHR, textStatus, error) {
                 console.log('Status ni:', textStatus, 'Error ni:', error);
@@ -124,7 +166,7 @@
                 event.preventDefault();
                 var form = ui.item.value;
                 formsTobeConfigured.push(form);
-                var configTableBody = $j('#unsaved-configuration-table > tbody');
+                var unsavedTableBody = $j('#unsaved-configuration-table > tbody');
                 var tableRow = $j('<tr id="' + form.uuid + '">');
                 var html = '<td><input type="hidden" name="formId[]" value="' + form.formId + '"/>' + form.name + '</td>' +
                       '<td>1</td>' +
@@ -132,11 +174,14 @@
                       '<td>' + (new Date()).toISOString() + '</td>' +
                       '<td><input type="checkbox" name="published[]" class="form-check" value="checked"/></td>';
                       //'<td><button class="btn btn-xs btn-primary" onclick="removeUnconfiguredForm(form)">Discard</button></td>';
+
                 var removeButton = $j('<button>', { class: "btn btn-xs btn-primary"}).append('Discard').click(function() {
                                         removeUnconfiguredForm(form);
                                    });
+
                 var lastCol = $j('<td>').append(removeButton);
-                tableRow.html(html).append(lastCol).appendTo(configTableBody);
+
+                tableRow.html(html).append(lastCol).appendTo(unsavedTableBody);
 
                 if(!$j('#unsaved-config-container').is(':visible')) {
                     $j('#unsaved-config-container').show();
@@ -227,43 +272,43 @@
         </div>
     </fieldset>
 
-    <div class="row">
-        Participating Users
-    </div>
-    <div class="row">
-        <input type="text" placeholder="Search user..." name="search" class="form-control"/>
-        <button class="btn btn-sm btn-default" id="user-search-button">Search</button>
-    </div>
-    <div class="row">
-        <input type="checkbox" name="useAllUsers"/>All Users in the system
-    </div>
-    <div class="row">
-        <table id="users-table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>User Name</th>
-                    <th>System ID</th>
-                    <th>Roles</th>
+    <fieldset class="custom-border">
+        <legend class="custom-border">Participating Users</legend>
+        <div>
+            <input type="text" placeholder="Search user..." name="search" class="form-control"/>
+            <button class="btn btn-sm btn-default" id="user-search-button">Search</button>
+        </div>
+        <div>
+            <input type="checkbox" name="useAllUsers"/>All Users in the system
+        </div>
+        <div>
+            <table id="users-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>User Name</th>
+                        <th>System ID</th>
+                        <th>Roles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="user" items="${participants}">
+                    <tr>
+                        <input type="hidden" name="user${user.id}" value="${user.uuid}"/>
+                        <td><input type="checkbox" name="usersToBeModified[]" value="${user.id}"/></td>
+                        <td><c:out value="${user.username}"/></td>
+                        <td><c:out value="${user.systemId}"/></td>
+                        <td>
+                            <c:forEach var="role" items="${user.roles}">
+                                <c:out value="${role.role}"/> ,
+                            </c:forEach>
+                        </td>
+                    </c:forEach>
                 </tr>
-            </thead>
-            <tbody>
-                <c:forEach var="user" items="${participants}">
-                <tr>
-                    <input type="hidden" name="user${user.id}" value="${user.uuid}"/>
-                    <td><input type="checkbox" name="usersToBeModified[]" value="${user.id}"/></td>
-                    <td><c:out value="${user.username}"/></td>
-                    <td><c:out value="${user.systemId}"/></td>
-                    <td>
-                        <c:forEach var="role" items="${user.roles}">
-                            <c:out value="${role.role}"/> ,
-                        </c:forEach>
-                    </td>
-                </c:forEach>
-            </tr>
-            </tbody>
-        </table>
-        <button class="btn btn-sm btn-default">Remove Selected</button>
-    </div>
+                </tbody>
+            </table>
+            <button class="btn btn-sm btn-default">Remove Selected</button>
+        </div>
+    </fieldset>
 </div>
 <%@ include file="/WEB-INF/template/footer.jsp"%>
