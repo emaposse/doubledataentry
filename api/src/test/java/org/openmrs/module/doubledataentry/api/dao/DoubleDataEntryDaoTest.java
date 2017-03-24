@@ -12,6 +12,7 @@ package org.openmrs.module.doubledataentry.api.dao;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.module.htmlformentry.HtmlForm;
+import org.openmrs.module.htmlformentry.HtmlFormEntryService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,7 +30,7 @@ public class DoubleDataEntryDaoTest extends BaseModuleContextSensitiveTest {
 	
 	@Autowired
 	DoubleDataEntryDao dao;
-	
+
 	private static final String datasetFileName = "test-data.xml";
 	
 	@Before
@@ -47,9 +48,17 @@ public class DoubleDataEntryDaoTest extends BaseModuleContextSensitiveTest {
 	}
 	
 	@Test
-	public void searchHtmlFormls_shouldReturnEmptyListIfNothingFound() throws Exception {
+	public void searchHtmlForms_shouldReturnEmptyListIfNothingFound() throws Exception {
 		List<HtmlForm> forms = dao.searchHtmlForms("xyz  two dalkd  d79ld");
 		
 		assertTrue("The list should be empty", forms.size() == 0);
+	}
+
+	@Test
+	public void getHtmlFormsUsedInConfiguration_ShouldReturnAllUsedForms() {
+		List<HtmlForm> forms = dao.getHtmlFormsUsedInConfigurations();
+
+		assertTrue(!forms.isEmpty());
+		assertTrue(forms.size() == 2);
 	}
 }
