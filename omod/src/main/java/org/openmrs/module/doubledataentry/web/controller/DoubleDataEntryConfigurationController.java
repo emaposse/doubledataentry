@@ -16,14 +16,15 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.module.doubledataentry.Configuration;
 import org.openmrs.module.doubledataentry.DoubleDataEntryConstants;
-import org.openmrs.module.doubledataentry.Participant;
 import org.openmrs.module.doubledataentry.api.DoubleDataEntryService;
 import org.openmrs.module.doubledataentry.web.RestUtils;
 import org.openmrs.module.htmlformentry.HtmlForm;
+import org.openmrs.module.htmlformentry.HtmlFormEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,13 +32,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 
 @Controller("doubledataentry.ConfigurationController")
 @RequestMapping(value = "/module/doubledataentry/configuration")
@@ -51,6 +47,9 @@ public class DoubleDataEntryConfigurationController {
 	
 	@Autowired
 	DoubleDataEntryService ddeService;
+	
+	@Autowired
+	HtmlFormEntryService htmlFormEntryService;
 	
 	@Autowired
 	@Qualifier("adminService")
@@ -85,6 +84,14 @@ public class DoubleDataEntryConfigurationController {
 		return convertListOfHtmlFormsToListOfMaps(matches);
 	}
 	
+	@RequestMapping(method = RequestMethod.POST)
+	@ResponseBody
+	public Object onConfigurationsPost(@RequestBody List<Map<String, Object>> configurations) {
+		System.out.println("configurations are: " + configurations);
+		List<Configuration> confObjects = ddeService.createConfigurationsFromMaps(configurations);
+		return convertListOfConfigurationsToListOfMaps(confObjects);
+	}
+	
 	/**
 	 * This class returns the form backing object. This can be a string, a boolean, or a normal java
 	 * pojo. The bean name defined in the ModelAttribute annotation and the type can be just defined
@@ -104,6 +111,15 @@ public class DoubleDataEntryConfigurationController {
 		
 		for (HtmlForm f : htmlForms) {
 			list.add(RestUtils.convertHtmlFormToMap(f));
+		}
+		return list;
+	}
+	
+	protected List<Map<String, Object>> convertListOfConfigurationsToListOfMaps(List<Configuration> configurations) {
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		
+		for (Configuration c : configurations) {
+			list.add(RestUtils.convertConfigurationToMap(c));
 		}
 		return list;
 	}

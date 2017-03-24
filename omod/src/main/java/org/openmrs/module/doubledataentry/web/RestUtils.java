@@ -31,10 +31,10 @@ public class RestUtils {
 		
 		return ret;
 	}
-
-	public static Map<String,Object> convertConfigurationToMap(Configuration configuration) {
+	
+	public static Map<String, Object> convertConfigurationToMap(Configuration configuration) {
 		Map<String, Object> ret = new LinkedHashMap<String, Object>();
-
+		
 		ret.put("id", configuration.getId());
 		ret.put("htmlForm", convertHtmlFormToMap(configuration.getHtmlForm()));
 		ret.put("frequency", configuration.getFrequency());
@@ -42,7 +42,7 @@ public class RestUtils {
 		ret.put("published", configuration.getPublished());
 		ret.put("retired", configuration.getRetired());
 		ret.put("uuid", configuration.getUuid());
-
+		
 		return ret;
 	}
 }

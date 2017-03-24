@@ -17,6 +17,7 @@ import org.openmrs.module.htmlformentry.HtmlForm;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The main service of this module, which is exposed for other modules. See
@@ -33,4 +34,8 @@ public interface DoubleDataEntryService extends OpenmrsService {
 	public List<Participant> getAllParticipants();
 	
 	public List<HtmlForm> getAllHtmlFormsHavingConfigurations();
+	
+	public Configuration createConfigurationFromMap(Map<String, Object> configurationMap);
+	
+	public List<Configuration> createConfigurationsFromMaps(List<Map<String, Object>> configurationMaps);
 }

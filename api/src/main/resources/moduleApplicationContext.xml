@@ -34,6 +34,9 @@
         <property name="target">
             <bean class="org.openmrs.module.doubledataentry.api.impl.DoubleDataEntryServiceImpl">
                 <property name="dao" ref="doubledataentry.DoubleDataEntryDao" />
+                <property name="configurationDao" ref="doubledataentry.ConfigurationDao"/>
+                <property name="adminService" ref="adminService"/>
+                <property name="htmlFormEntryService" ref="htmlFormEntryService"/>
             </bean>
         </property>
         <property name="preInterceptors">

@@ -49,8 +49,9 @@
             contentType: 'application/json',
             type: 'POST',
             url: url,
-            data: createConfigObjects(),
+            data: JSON.stringify(createConfigObjects()),
             success: function(createdConfigs) {
+                console.log("Returned: ", JSON.stringify(createdConfigs, null, 2));
 
             },
             error: function(jqXHR, textStatus, error) {
@@ -60,13 +61,22 @@
     }
 
     function createConfigObjects() {
+        var formId = $j('input[name="formId[]"]').map(function() {
+            return $j(this).val();
+        });
+        var frequency = $j('input[name="frequency[]"]').map(function() {
+            return $j(this).val();
+        });
+        var published = $j('input[name="published[]"]:checked').map(function() {
+            if($j(this).length > 0) return 'checked';
+            return 'unchecked';
+        });
         var configs = [];
-
         for(var i=0; i<formId.length ; i++) {
             configs.push({
                 formId: formId[i],
                 frequency: frequency[i],
-                published: published[i] === 'checked'? true : false,
+                published: published[i] === 'checked' ? true: false,
             });
         }
         return configs;
@@ -84,10 +94,11 @@
             minLength: 3,
             source: function(request, response) {
                 var term = request.term;
-                var url = pageContext + '/ws/module/doubledataentry/configuration/forms?search=' + request.term;
+                var url = pageContext + '/ws/module/doubledataentry/configuration/forms';
                 $j.ajax({
                     contentType: 'application/json',
                     url: url,
+                    data: { search: request.term },
                     success: function(forms) {
                         var qualified = forms.filter(function(form) {
                             var matchedForm = formsTobeConfigured.find(function(tobeConfigured) {
@@ -125,7 +136,7 @@
                                         removeUnconfiguredForm(form);
                                    });
                 var lastCol = $j('<td>').append(removeButton);
-                tableRow.html(html).append(lastCol).prependTo(configTableBody);
+                tableRow.html(html).append(lastCol).appendTo(configTableBody);
 
                 if(!$j('#unsaved-config-container').is(':visible')) {
                     $j('#unsaved-config-container').show();

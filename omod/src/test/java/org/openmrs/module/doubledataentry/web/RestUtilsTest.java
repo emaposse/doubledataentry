@@ -35,26 +35,26 @@ public class RestUtilsTest {
 		assertTrue(converted.containsKey("retired"));
 		assertTrue(converted.containsKey("version"));
 	}
-
+	
 	@Test
-    public void convertConfigurationToMap_shouldHaveDefinedProperties() {
-        Configuration configuration = new Configuration();
-        HtmlForm htmlForm = new HtmlForm();
-        Form form = new Form();
-        htmlForm.setForm(form);
-        String uuid = OpenmrsUtil.generateUid();
-
-        configuration.setId(1000);
-        configuration.setHtmlForm(htmlForm);
-        configuration.setUuid(uuid);
-
-        Map<String, Object> converted = RestUtils.convertConfigurationToMap(configuration);
-        assertTrue(converted.containsKey("id"));
-        assertTrue(converted.containsKey("uuid"));
-        assertTrue(converted.containsKey("htmlForm"));
-        assertTrue(converted.containsKey("frequency"));
-        assertTrue(converted.containsKey("revision"));
-        assertTrue(converted.containsKey("published"));
-        assertTrue(converted.containsKey("retired"));
-    }
+	public void convertConfigurationToMap_shouldHaveDefinedProperties() {
+		Configuration configuration = new Configuration();
+		HtmlForm htmlForm = new HtmlForm();
+		Form form = new Form();
+		htmlForm.setForm(form);
+		String uuid = OpenmrsUtil.generateUid();
+		
+		configuration.setId(1000);
+		configuration.setHtmlForm(htmlForm);
+		configuration.setUuid(uuid);
+		
+		Map<String, Object> converted = RestUtils.convertConfigurationToMap(configuration);
+		assertTrue(converted.containsKey("id"));
+		assertTrue(converted.containsKey("uuid"));
+		assertTrue(converted.containsKey("htmlForm"));
+		assertTrue(converted.containsKey("frequency"));
+		assertTrue(converted.containsKey("revision"));
+		assertTrue(converted.containsKey("published"));
+		assertTrue(converted.containsKey("retired"));
+	}
 }
