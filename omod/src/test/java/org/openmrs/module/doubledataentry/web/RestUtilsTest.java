@@ -23,6 +23,7 @@ public class RestUtilsTest {
 		htmlForm.setForm(form);
 		LinkedHashMap<String, Object> converted = RestUtils.convertHtmlFormToMap(htmlForm);
 		
+		Assert.assertTrue(converted.containsKey("formId"));
 		Assert.assertTrue(converted.containsKey("uuid"));
 		Assert.assertTrue(converted.containsKey("name"));
 		Assert.assertTrue(converted.containsKey("description"));

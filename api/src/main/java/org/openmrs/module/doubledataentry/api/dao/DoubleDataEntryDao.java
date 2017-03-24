@@ -36,7 +36,7 @@ public class DoubleDataEntryDao {
 		
 		return (List<HtmlForm>) c.list();
 	}
-
+	
 	public List<HtmlForm> getHtmlFormsUsedInConfigurations() {
 		String hql = "select c.htmlForm from doubledataentry.Configuration c ";
 		return getSession().createQuery(hql).list();

@@ -12,6 +12,7 @@ public class RestUtils {
 	public static LinkedHashMap<String, Object> convertHtmlFormToMap(HtmlForm htmlForm) {
 		LinkedHashMap<String, Object> ret = new LinkedHashMap<String, Object>();
 		
+		ret.put("formId", htmlForm.getId());
 		if (htmlForm.getForm() != null) {
 			ret.put("name", htmlForm.getForm().getName());
 			ret.put("description", htmlForm.getForm().getDescription());

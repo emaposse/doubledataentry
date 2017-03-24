@@ -14,7 +14,9 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
+import org.openmrs.module.doubledataentry.Configuration;
 import org.openmrs.module.doubledataentry.DoubleDataEntryConstants;
+import org.openmrs.module.doubledataentry.Participant;
 import org.openmrs.module.doubledataentry.api.DoubleDataEntryService;
 import org.openmrs.module.doubledataentry.web.RestUtils;
 import org.openmrs.module.htmlformentry.HtmlForm;
@@ -29,10 +31,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 @Controller("doubledataentry.ConfigurationController")
 @RequestMapping(value = "/module/doubledataentry/configuration")
@@ -59,15 +64,25 @@ public class DoubleDataEntryConfigurationController {
 	@RequestMapping(value = "manage.form", method = RequestMethod.GET)
 	public ModelAndView onGet() {
 		ModelAndView toRet = new ModelAndView("/module/doubledataentry/manage-configuration");
-		String defaultFrequency = as.getGlobalProperty(DoubleDataEntryConstants.DEFAULT_FREQUENCY_GP);
-		toRet.addObject("configuration", defaultFrequency);
+		
+		// Get existing configuration.
+		String defaultFrequency = as.getGlobalProperty(DoubleDataEntryConstants.DEFAULT_FREQUENCY_GP, "0.1");
+		
+		toRet.addObject("configurations", ddeService.getAllConfigurations());
+		toRet.addObject("participants", ddeService.getAllParticipants());
+		toRet.addObject("defaultFrequency", defaultFrequency);
 		return toRet;
 	}
 	
 	@RequestMapping(value = "forms")
 	@ResponseBody
-	public Object searchForms(@RequestParam("search") String search) {
-		return convertListOfHtmlFormsToListOfMaps(ddeService.searchHtmlFormsByName(search));
+	public Object searchForms(@RequestParam("search") String search,
+	        @RequestParam(value = "filterUsed", defaultValue = "true") boolean filter) {
+		List<HtmlForm> matches = ddeService.searchHtmlFormsByName(search);
+		if (filter) {
+			matches.removeAll(ddeService.getAllHtmlFormsHavingConfigurations());
+		}
+		return convertListOfHtmlFormsToListOfMaps(matches);
 	}
 	
 	/**

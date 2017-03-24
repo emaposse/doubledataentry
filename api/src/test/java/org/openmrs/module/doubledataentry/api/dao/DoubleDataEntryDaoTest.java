@@ -30,7 +30,7 @@ public class DoubleDataEntryDaoTest extends BaseModuleContextSensitiveTest {
 	
 	@Autowired
 	DoubleDataEntryDao dao;
-
+	
 	private static final String datasetFileName = "test-data.xml";
 	
 	@Before
@@ -53,11 +53,11 @@ public class DoubleDataEntryDaoTest extends BaseModuleContextSensitiveTest {
 		
 		assertTrue("The list should be empty", forms.size() == 0);
 	}
-
+	
 	@Test
 	public void getHtmlFormsUsedInConfiguration_ShouldReturnAllUsedForms() {
 		List<HtmlForm> forms = dao.getHtmlFormsUsedInConfigurations();
-
+		
 		assertTrue(!forms.isEmpty());
 		assertTrue(forms.size() == 2);
 	}

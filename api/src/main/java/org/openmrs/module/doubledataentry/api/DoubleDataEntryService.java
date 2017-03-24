@@ -11,6 +11,8 @@ package org.openmrs.module.doubledataentry.api;
 
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.module.doubledataentry.Configuration;
+import org.openmrs.module.doubledataentry.Participant;
 import org.openmrs.module.htmlformentry.HtmlForm;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,4 +27,10 @@ public interface DoubleDataEntryService extends OpenmrsService {
 	@Authorized
 	@Transactional
 	public List<HtmlForm> searchHtmlFormsByName(String search);
+	
+	public List<Configuration> getAllConfigurations();
+	
+	public List<Participant> getAllParticipants();
+	
+	public List<HtmlForm> getAllHtmlFormsHavingConfigurations();
 }
