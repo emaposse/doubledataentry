@@ -14,3 +14,5 @@ legend.custom-border {
     font-size: 1.2em !important;
     text-align: left !important;
 }
+
+div.top-buffer { margin-top:20px; }

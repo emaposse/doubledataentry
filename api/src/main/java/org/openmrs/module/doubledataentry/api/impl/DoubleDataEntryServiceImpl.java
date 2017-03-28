@@ -9,10 +9,12 @@
  */
 package org.openmrs.module.doubledataentry.api.impl;
 
+import org.hibernate.ObjectNotFoundException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.doubledataentry.Configuration;
 import org.openmrs.module.doubledataentry.DoubleDataEntryConstants;
 import org.openmrs.module.doubledataentry.Participant;
@@ -22,7 +24,7 @@ import org.openmrs.module.doubledataentry.api.dao.DoubleDataEntryDao;
 import org.openmrs.module.htmlformentry.HtmlForm;
 import org.openmrs.module.htmlformentry.HtmlFormEntryService;
 import org.springframework.transaction.annotation.Transactional;
-import sun.awt.ConstrainableGraphics;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,8 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 	HtmlFormEntryService htmlFormEntryService;
 	
 	AdministrationService adminService;
+	
+	MessageSourceService messageSourceService;
 	
 	/**
 	 * Injected in moduleApplicationContext.xml
@@ -59,6 +63,10 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 		this.adminService = adminService;
 	}
 	
+	public void setMessageSourceService(MessageSourceService messageSourceService) {
+		this.messageSourceService = messageSourceService;
+	}
+	
 	/**
 	 * Injected in moduleApplicationContext.xml
 	 */
@@ -69,6 +77,20 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 	@Override
 	public List<HtmlForm> searchHtmlFormsByName(final String search) {
 		return dao.searchHtmlForms(search);
+	}
+	
+	@Override
+	public Configuration getConfigurationById(Integer id) {
+		return configurationDao.getConfiguration(id);
+	}
+	
+	@Override
+	public Configuration getConfigurationByUuid(String uuid) {
+		Configuration configuration = configurationDao.getConfiguration(uuid);
+		if (configuration == null) {
+			throw new ObjectNotFoundException(Configuration.class, "Configuration with uuid " + uuid + " not found");
+		}
+		return configuration;
 	}
 	
 	@Override
@@ -88,7 +110,12 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 	
 	@Override
 	public List<HtmlForm> getAllHtmlFormsHavingConfigurations() {
-		return dao.getHtmlFormsUsedInConfigurations();
+		return getAllHtmlFormsHavingConfigurations(false, false);
+	}
+	
+	@Override
+	public List<HtmlForm> getAllHtmlFormsHavingConfigurations(Boolean includeRetired, Boolean includeRetiredConfigurations) {
+		return dao.getHtmlFormsUsedInConfigurations(includeRetired, includeRetiredConfigurations);
 	}
 	
 	@Override
@@ -142,5 +169,26 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 			configurations.add(configurationDao.saveConfiguration(configuration));
 		}
 		return configurations;
+	}
+	
+	@Override
+	public Configuration retireConfiguration(Configuration configuration, String reason) {
+		if (!StringUtils.hasText(reason)) {
+			throw new IllegalArgumentException(messageSourceService.getMessage("general.voidReason.empty"));
+		}
+		
+		if (!configuration.getRetired()) {
+			configuration.setRetired(true);
+			configuration.setRetireReason(reason);
+			return configurationDao.saveConfiguration(configuration);
+		}
+		return configuration;
+	}
+	
+	@Override
+	public Configuration retireConfigurationByUuid(String uuid, String reason) {
+		Configuration configuration = configurationDao.getConfiguration(uuid);
+		
+		return retireConfiguration(configuration, reason);
 	}
 }

@@ -36,6 +36,7 @@
                 <property name="dao" ref="doubledataentry.DoubleDataEntryDao" />
                 <property name="configurationDao" ref="doubledataentry.ConfigurationDao"/>
                 <property name="adminService" ref="adminService"/>
+                <property name="messageSourceService" ref="messageSourceService"/>
                 <property name="htmlFormEntryService" ref="htmlFormEntryService"/>
             </bean>
         </property>

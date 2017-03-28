@@ -37,8 +37,19 @@ public class DoubleDataEntryDao {
 		return (List<HtmlForm>) c.list();
 	}
 	
-	public List<HtmlForm> getHtmlFormsUsedInConfigurations() {
+	public List<HtmlForm> getHtmlFormsUsedInConfigurations(Boolean includeRetired, Boolean includeRetiredConfigurations) {
 		String hql = "select c.htmlForm from doubledataentry.Configuration c ";
+		
+		if (!includeRetired || !includeRetiredConfigurations) {
+			if (!includeRetired && !includeRetiredConfigurations) {
+				hql += "where c.htmlForm.retired = false and c.retired = false";
+			} else if (!includeRetired) {
+				hql += "where c.htmlForm.retired = false";
+			} else {
+				hql += "where c.retired = false";
+			}
+		}
+		
 		return getSession().createQuery(hql).list();
 	}
 }

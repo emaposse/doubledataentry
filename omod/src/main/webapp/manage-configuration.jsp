@@ -6,8 +6,12 @@
 
 <%@ include file="doubledataentry-header.jsp" %>
 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <openmrs:htmlInclude file="/moduleResources/doubledataentry/bootstrap/css/bootstrap-3.0.3.min.css" />
+<openmrs:htmlInclude file="/moduleResources/doubledataentry/datatables.min.css" />
 <openmrs:htmlInclude file="/moduleResources/doubledataentry/bootstrap/js/bootstrap-3.0.3.min.js" />
+<openmrs:htmlInclude file="/moduleResources/doubledataentry/datatables.min.js" />
 <openmrs:htmlInclude file="/moduleResources/doubledataentry/configuration.css"/>
 
 <script type="text/javascript">
@@ -66,10 +70,10 @@
                           '<td><input type="text" name="configFrequency[]" value="' + configuration.frequency + '" class="form-control"/></td>';
 
                     if(configuration.dateChanged) {
-                          html += '<td>' + (new Date(configuration.dateChanged)).toISOString() + '</td>';
+                          html += '<td>' + (new Date(configuration.dateChanged)).toISOString().replace('T',' ').replace('Z','') + '</td>';
                     }
                     else {
-                          html += '<td>' + (new Date(configuration.dateCreated)).toISOString(); + '</td>';
+                          html += '<td>' + (new Date(configuration.dateCreated)).toISOString().replace('T',' ').replace('Z','') + '</td>';
                     }
 
                     if(configuration.published) {
@@ -124,12 +128,57 @@
         return configs;
     }
 
+    function toggleRetireButton() {
+        var someChecked = $j('input[name="toBeModified[]"]:checked').length;
+
+        if(someChecked > 0) {
+            $j('button[name="retire-button"]').prop('disabled', false);
+        }
+        else {
+             $j('button[name="retire-button"]').prop('disabled', true);
+             toggleRetireReasonTextArea(false);
+        }
+    }
+
+    function retireConfigurations() {
+        toggleRetireReasonTextArea(true);
+    }
+
+    function toggleRetireReasonTextArea(show) {
+        if(show) {
+            $j('#configurations-retire-reason').show();
+        }
+        else {
+            $j('#configurations-retire-reason').hide();
+        }
+    }
+
+    function saveRetiredConfigurations() {
+
+    }
+
     $j(document).ready(function() {
+        $j('#configuration-table').DataTable({
+            searching: false,
+            ordering: false,
+            select: true
+        });
+
         $j('#unsaved-config-container').hide();
 
         $j('#form-search-button').click(function() {
             var toSearch = $j('input[name=search]').val();
             doubleDataEntryfetchForms(pageContext, toSearch);
+        });
+
+        $j('textarea[name="retireReason"]').keyup(function() {
+            console.log('Thamani yake ni:', $j(this).val());
+            if($j(this).val().trim().length > 0) {
+                $j('#save-retired').prop('disabled',false);
+            }
+            else {
+                $j('#save-retired').prop('disabled',true);
+            }
         });
 
         $j("#forms").autocomplete({
@@ -202,7 +251,7 @@
 
 <h4>Frequency Settings</h4><hr/>
 
-<div class="container pull-left">
+<div style="width:80%;">
     <fieldset class="custom-border">
         <legend class="custom-border">Add New Configurations</legend>
         <div class="ui-widgets">
@@ -252,10 +301,23 @@
                     <c:forEach var="configuration" items="${configurations}">
                     <tr>
                         <input type="hidden" name="config${configuration.id}" value="${configuration.uuid}"/>
-                        <td><input type="checkbox" name="toBeModified[]" value="${configuration.id}" class="form-control"/></td>
+                        <td>
+                            <input type="checkbox" name="toBeModified[]" value="${configuration.id}"
+                                onclick="toggleRetireButton()" class="form-check"/>
+                        </td>
                         <td><c:out value="${configuration.htmlForm.form.name}"/></td>
                         <td><c:out value="${configuration.revision}"/></td>
-                        <td><c:out value="${configuration.frequency}"/></td>
+                        <td>
+                            <fmt:formatNumber value="${configuration.frequency}" type="percent" var="percentFrequency"/>
+                            <c:choose>
+                                <c:when test="${configuration.retired}">
+                                    <c:out value="${percentFrequency}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <input type="text" name="config${configuration.id}Frequency" value="${percentFrequency}" class="form-control"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
                         <td><c:out value="${configuration.dateChanged != null ? configuration.dateChanged : configuration.dateCreated}"/></td>
                         <td><c:out value="${configuration.published}"/></td>
                         <td>
@@ -267,8 +329,14 @@
                     </c:forEach>
                 </tbody>
             </table>
-            <button class="btn btn-sm btn-default">Retire Selected</button>
+            <button class="btn btn-sm btn-default" onclick="retireConfigurations()" disabled="true" name="retire-button">Retire Selected</button>
             <button class="btn btn-sm btn-default">Apply Changes</button>
+            <div id="configurations-retire-reason" style="display:none;" class="top-buffer">
+                <span>Provide Reason</span>
+                <textarea name="retireReason" class="form-control">
+                </textarea>
+                <button class="btn btn-sm btn-warning" disabled="true" id="save-retired">Save</button>
+            </div>
         </div>
     </fieldset>
 

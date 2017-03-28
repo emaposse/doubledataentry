@@ -55,10 +55,17 @@ public class DoubleDataEntryDaoTest extends BaseModuleContextSensitiveTest {
 	}
 	
 	@Test
-	public void getHtmlFormsUsedInConfiguration_ShouldReturnAllUsedForms() {
-		List<HtmlForm> forms = dao.getHtmlFormsUsedInConfigurations();
+	public void getHtmlFormsUsedInConfigurations_ShouldReturnAllUsedForms() {
+		List<HtmlForm> forms = dao.getHtmlFormsUsedInConfigurations(true, true);
 		
 		assertTrue(!forms.isEmpty());
 		assertTrue(forms.size() == 3);
+	}
+	
+	@Test
+	public void getHtmlFormsUsedInConfigurations_shouldNotIncludeRetiredForms() {
+		List<HtmlForm> forms = dao.getHtmlFormsUsedInConfigurations(false, false);
+		
+		assertEquals("Should have only two forms", 2, forms.size());
 	}
 }
