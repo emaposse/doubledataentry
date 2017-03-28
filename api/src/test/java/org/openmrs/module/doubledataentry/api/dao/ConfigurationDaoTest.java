@@ -18,6 +18,8 @@ import org.openmrs.module.htmlformentry.HtmlFormEntryService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -63,5 +65,19 @@ public class ConfigurationDaoTest extends BaseModuleContextSensitiveTest {
 		Configuration configuration = dao.getConfiguration("a7a41f9d-0b38-11e7-b6f1-0242ac110002");
 		assertNotNull("configuration object should not be null", configuration);
 		assertEquals("id of fetched object", Integer.valueOf(1), configuration.getId());
+	}
+	
+	@Test
+	public void getAllConfigurations_shouldReturnAllConfigurationWhenPassedTrue() {
+		List<Configuration> configurations = dao.getAllConfigurations(true);
+		assertNotNull(configurations);
+		assertEquals("size should be 3", 3, configurations.size());
+	}
+	
+	@Test
+	public void getAllConfigurations_shouldReturnOnlyRetiredConfigurationsWhenPassedFalse() {
+		List<Configuration> configurations = dao.getAllConfigurations(false);
+		assertNotNull(configurations);
+		assertEquals("size should be 2", 2, configurations.size());
 	}
 }

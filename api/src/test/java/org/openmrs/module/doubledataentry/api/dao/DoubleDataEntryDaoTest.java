@@ -59,6 +59,6 @@ public class DoubleDataEntryDaoTest extends BaseModuleContextSensitiveTest {
 		List<HtmlForm> forms = dao.getHtmlFormsUsedInConfigurations();
 		
 		assertTrue(!forms.isEmpty());
-		assertTrue(forms.size() == 2);
+		assertTrue(forms.size() == 3);
 	}
 }

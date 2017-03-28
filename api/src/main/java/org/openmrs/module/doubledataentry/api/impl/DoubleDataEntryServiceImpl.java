@@ -21,6 +21,8 @@ import org.openmrs.module.doubledataentry.api.dao.ConfigurationDao;
 import org.openmrs.module.doubledataentry.api.dao.DoubleDataEntryDao;
 import org.openmrs.module.htmlformentry.HtmlForm;
 import org.openmrs.module.htmlformentry.HtmlFormEntryService;
+import org.springframework.transaction.annotation.Transactional;
+import sun.awt.ConstrainableGraphics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +73,12 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 	
 	@Override
 	public List<Configuration> getAllConfigurations() {
-		return new ArrayList<Configuration>();
+		return getAllConfigurations(false);
+	}
+	
+	@Override
+	public List<Configuration> getAllConfigurations(Boolean includeRetired) {
+		return configurationDao.getAllConfigurations(includeRetired);
 	}
 	
 	@Override
@@ -126,10 +133,13 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 	}
 	
 	@Override
+	@Transactional
 	public List<Configuration> createConfigurationsFromMaps(List<Map<String, Object>> configurationMaps) {
 		List<Configuration> configurations = new ArrayList<Configuration>();
-		for (Map<String, Object> map : configurationMaps) {
-			configurations.add(createConfigurationFromMap(map));
+		Configuration configuration = null;
+		for (Map<String, Object> objectMap : configurationMaps) {
+			configuration = createConfigurationFromMap(objectMap);
+			configurations.add(configurationDao.saveConfiguration(configuration));
 		}
 		return configurations;
 	}

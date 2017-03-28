@@ -23,6 +23,7 @@ import org.openmrs.module.htmlformentry.HtmlFormEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -86,10 +88,9 @@ public class DoubleDataEntryConfigurationController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public Object onConfigurationsPost(@RequestBody List<Map<String, Object>> configurations) {
-		System.out.println("configurations are: " + configurations);
-		List<Configuration> confObjects = ddeService.createConfigurationsFromMaps(configurations);
-		return convertListOfConfigurationsToListOfMaps(confObjects);
+	public Object onConfigurationsPost(@RequestBody List confMaps) {
+		List<Configuration> configurations = ddeService.createConfigurationsFromMaps(confMaps);
+		return convertListOfConfigurationsToListOfMaps(configurations);
 	}
 	
 	/**
@@ -117,7 +118,6 @@ public class DoubleDataEntryConfigurationController {
 	
 	protected List<Map<String, Object>> convertListOfConfigurationsToListOfMaps(List<Configuration> configurations) {
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		
 		for (Configuration c : configurations) {
 			list.add(RestUtils.convertConfigurationToMap(c));
 		}

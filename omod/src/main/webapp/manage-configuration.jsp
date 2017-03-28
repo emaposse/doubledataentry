@@ -256,7 +256,7 @@
                         <td><c:out value="${configuration.htmlForm.form.name}"/></td>
                         <td><c:out value="${configuration.revision}"/></td>
                         <td><c:out value="${configuration.frequency}"/></td>
-                        <td><c:out value="${configuration.dateStarted}"/></td>
+                        <td><c:out value="${configuration.dateChanged != null ? configuration.dateChanged : configuration.dateCreated}"/></td>
                         <td><c:out value="${configuration.published}"/></td>
                         <td>
                             <c:if test="${configuration.revision > 1 }">

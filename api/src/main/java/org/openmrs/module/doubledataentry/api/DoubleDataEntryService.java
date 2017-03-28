@@ -31,6 +31,8 @@ public interface DoubleDataEntryService extends OpenmrsService {
 	
 	public List<Configuration> getAllConfigurations();
 	
+	public List<Configuration> getAllConfigurations(Boolean includeRetired);
+	
 	public List<Participant> getAllParticipants();
 	
 	public List<HtmlForm> getAllHtmlFormsHavingConfigurations();

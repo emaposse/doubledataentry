@@ -9,6 +9,7 @@
  */
 package org.openmrs.module.doubledataentry.api.dao;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.DbSession;
@@ -16,6 +17,8 @@ import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.doubledataentry.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository("doubledataentry.ConfigurationDao")
 public class ConfigurationDao {
@@ -28,16 +31,26 @@ public class ConfigurationDao {
 	}
 	
 	public Configuration saveConfiguration(Configuration configuration) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(configuration);
+		getSession().saveOrUpdate(configuration);
 		return configuration;
 	}
 	
 	public Configuration getConfiguration(Integer id) {
-		return (Configuration) sessionFactory.getCurrentSession().get(Configuration.class, id);
+		return (Configuration) getSession().get(Configuration.class, id);
 	}
 	
 	public Configuration getConfiguration(String uuid) {
-		return (Configuration) sessionFactory.getCurrentSession().createCriteria(Configuration.class)
-		        .add(Restrictions.eq("uuid", uuid)).uniqueResult();
+		return (Configuration) getSession().createCriteria(Configuration.class).add(Restrictions.eq("uuid", uuid))
+		        .uniqueResult();
+	}
+	
+	public List<Configuration> getAllConfigurations(Boolean includeRetired) {
+		Criteria criteria = getSession().createCriteria(Configuration.class);
+		
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
+		}
+		
+		return (List<Configuration>) criteria.list();
 	}
 }
