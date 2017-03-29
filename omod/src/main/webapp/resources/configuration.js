@@ -4,6 +4,14 @@
  */
 var $j = jQuery.noConflict();
 var formsTobeConfigured = [];
+var configsMap = new Map();
+
+function populateConfigurationsMap(configurations) {
+    configurations.forEach(function (configuration) {
+        configsMap.set(configuration.uuid, configuration);
+    });
+}
+
 function doubleDataEntryfetchForms(pageContext, searchText) {
     console.log('fetcher is called');
     var url = pageContext + '/ws/module/doubledataentry/configuration/forms?search=' + searchText;
@@ -32,6 +40,72 @@ function removeUnconfiguredForm(form) {
     }
 }
 
+function constructExistingConfigurationsTable(createdConfigs) {
+    populateConfigurationsMap(createdConfigs);
+    $j('#unsaved-configuration-table > tbody').empty();
+    formsTobeConfigured = [];
+    $j('#unsaved-config-container').hide();
+
+    // Append to configs
+    var configTableBody = $j('#configuration-table > tbody');
+    createdConfigs.forEach(function(configuration) {
+        var frequency = '' + configuration.frequency;
+        if(frequency.indexOf('%') === -1) {
+            frequency *= 100;
+            frequency  += '%';
+        }
+        var tableRow = $j('<tr>').attr('id', 'config-tr-' + configuration.uuid);
+        var html = '<td><input type="checkbox" name="toBeModified[]" value="' + configuration.uuid + '" class="form-check" onclick="toggleRetireButton()"/></td>' +
+            '<td>' + configuration.htmlForm.name + '</td>' +
+            '<td>' + configuration.revision + '</td>' +
+            '<td><input type="text" name="configFrequency[]" value="' + frequency + '" class="form-control" onkeyup="configChangesWatcher()"/></td>';
+
+        if(configuration.dateChanged) {
+            html += '<td>' + (new Date(configuration.dateChanged)).toISOString().replace('T',' ').replace('Z','') + '</td>';
+        }
+        else {
+            html += '<td>' + (new Date(configuration.dateCreated)).toISOString().replace('T',' ').replace('Z','') + '</td>';
+        }
+
+        if(configuration.published) {
+            html += '<td><input type="checkbox" name="published[]" class="form-check" checked ' +
+                'value="' + configuration.uuid + '" onclick="configChangesWatcher()"/></td>';
+        }
+        else {
+            html += '<td><input type="checkbox" name="published[]" class="form-check" ' +
+                'value="' + configuration.uuid + '" onclick="configChangesWatcher()"/></td>';
+        }
+
+        // var checkbox = $j('<input>').attr('type','checkbox').attr('name', 'published[]').val(configuration.uuid);
+        //
+        // checkbox.click(function() {
+        //     var boxes = $j('input[name="published[]"]');
+        //     var frequencies = $j('input[name="configFrequency[]"');
+        //     toggleApplyChangesButton(boxes, frequencies);
+        // });
+        //
+        // if(configuration.published) {
+        //     checkbox.prop('checked', true);
+        // }
+        //
+        // html += $j('<td>').append(checkbox).html();
+
+        if(configuration.revision > 1){
+            html += '<td><a>View History</a><td>';
+        }
+        else {
+            html += '<td></td>';
+        }
+
+        tableRow.html(html).prependTo(configTableBody);
+
+        if(!$j('#configuration-container').is(':visible')) {
+            $j('#configuration-container').show();
+            $j('#no-configuration-message').hide();
+        }
+    });
+}
+
 function saveConfigurations() {
     var url = pageContext + '/ws/module/doubledataentry/configuration';
     $j.ajax({
@@ -39,56 +113,7 @@ function saveConfigurations() {
         type: 'POST',
         url: url,
         data: JSON.stringify(createConfigObjects()),
-        success: function(createdConfigs) {
-            $j('#unsaved-configuration-table > tbody').empty();
-            formsTobeConfigured = [];
-            $j('#unsaved-config-container').hide();
-
-            // Append to configs
-            var configTableBody = $j('#configuration-table > tbody');
-            createdConfigs.forEach(function(configuration) {
-                var frequency = '' + configuration.frequency;
-                if(frequency.indexOf('%') === -1) {
-                    frequency *= 100;
-                    frequency  += '%';
-                }
-                var tableRow = $j('<tr>').attr('id', 'config-tr-' + configuration.uuid);
-                var html = '<td><input type="checkbox" name="toBeModified[]" value="' + configuration.uuid + '" class="form-check"/></td>' +
-                    '<td>' + configuration.htmlForm.name + '</td>' +
-                    '<td>' + configuration.revision + '</td>' +
-                    '<td><input type="text" name="configFrequency[]" value="' + frequency + '" class="form-control"/></td>';
-
-                if(configuration.dateChanged) {
-                    html += '<td>' + (new Date(configuration.dateChanged)).toISOString().replace('T',' ').replace('Z','') + '</td>';
-                }
-                else {
-                    html += '<td>' + (new Date(configuration.dateCreated)).toISOString().replace('T',' ').replace('Z','') + '</td>';
-                }
-
-                if(configuration.published) {
-                    html += '<td><input type="checkbox" name="published[]" class="form-check" checked ' +
-                        'value="' + configuration.uuid + '"/></td>';
-                }
-                else {
-                    html += '<td><input type="checkbox" name="published[]" class="form-check" ' +
-                        'value="' + configuration.uuid + '"/></td>';
-                }
-
-                if(configuration.revision > 1){
-                    html += '<td><a>View History</a><td>';
-                }
-                else {
-                    html += '<td></td>';
-                }
-
-                tableRow.html(html).prependTo(configTableBody);
-
-                if(!$j('#configuration-container').is(':visible')) {
-                    $j('#configuration-container').show();
-                    $j('#no-configuration-message').hide();
-                }
-            });
-        },
+        success: constructExistingConfigurationsTable,
         error: function(jqXHR, textStatus, error) {
             console.log('Status ni:', textStatus, 'Error ni:', error);
         }
@@ -127,6 +152,46 @@ function toggleRetireButton() {
         $j('button[name="retire-button"]').prop('disabled', true);
         toggleRetireReasonTextArea(false);
     }
+}
+
+function toggleApplyChangesButton(checkBoxElems, frequencyInputElems) {
+    var thereAreChanges = false;
+    for(var i=0; i<checkBoxElems.length; i++) {
+        var box = freq = {};
+        box.uuid = $j(checkBoxElems[i]).val();
+        box.published = $j(checkBoxElems[i]).prop('checked');
+
+        freq.uuid = $j(frequencyInputElems[i]).parent().parent().attr('id').replace('config-tr-', '');
+        freq.value = $j(frequencyInputElems[i]).val();
+
+        var currentPublished = configsMap.get(box.uuid).published;
+        var currentFrequency = configsMap.get(freq.uuid).frequency;
+
+        if(currentFrequency !== convertPercent(freq.value) || currentPublished !== box.published) {
+            thereAreChanges = true;
+            break;
+        }
+    }
+
+    if(thereAreChanges) {
+        $j('button[name="apply-changes-button"]').prop('disabled', false);
+    }
+    else {
+        $j('button[name="apply-changes-button"]').prop('disabled', true);
+    }
+}
+
+function convertPercent(percent) {
+    if(percent.indexOf('%') === -1) return percent;
+    percent = percent.replace('%', '');
+
+    return percent/100;
+}
+
+function configChangesWatcher() {
+    var boxes = $j('input[name="published[]"]');
+    var frequencies = $j('input[name="configFrequency[]"');
+    toggleApplyChangesButton(boxes, frequencies);
 }
 
 function retireConfigurations() {
@@ -185,12 +250,35 @@ function saveRetiredConfigurations() {
     });
 }
 
-$j(document).ready(function() {
-    $j('#configuration-table').DataTable({
-        searching: false,
-        ordering: false,
-        select: true
+function fetchConfigurations(includeRetired) {
+    var url = pageContext + '/ws/module/doubledataentry/configuration';
+    var params = {};
+    if(includeRetired !== undefined && includeRetired !== null) {
+        params.includeRetired = includeRetired;
+    }
+
+    $j.ajax({
+        contentType: 'application/json',
+        type: 'GET',
+        url: url,
+        data: params,
+        success: function(configs) {
+            constructExistingConfigurationsTable(configs);
+            $j('#configuration-table').DataTable({
+                searching: false,
+                ordering: false,
+                select: true
+            });
+        },
+        error: function(jqXHR, textStatus, error) {
+            console.error('Status:', textStatus, 'Error:', error);
+        }
     });
+}
+
+$j(document).ready(function() {
+    // Fetch configurations from the server.
+    fetchConfigurations();
 
     $j('#unsaved-config-container').hide();
 

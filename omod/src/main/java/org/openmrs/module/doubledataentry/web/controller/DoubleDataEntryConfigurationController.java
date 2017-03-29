@@ -86,17 +86,24 @@ public class DoubleDataEntryConfigurationController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public Object onConfigurationsPost(@RequestBody List confMaps) {
+	public Object onPostConfigurations(@RequestBody List confMaps) {
 		List<Configuration> configurations = ddeService.createConfigurationsFromMaps(confMaps);
 		return convertListOfConfigurationsToListOfMaps(configurations);
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE)
 	@ResponseBody
-	public void onConfigurationDelete(@RequestBody List<Map> uuidMaps) {
+	public void onDeleteConfigurations(@RequestBody List<Map> uuidMaps) {
 		for (Map uuidMap : uuidMaps) {
 			ddeService.retireConfigurationByUuid(uuidMap.get("uuid").toString(), uuidMap.get("reason").toString());
 		}
+	}
+	
+	@RequestMapping
+	@ResponseBody
+	public Object onGetConfigurations(@RequestParam(defaultValue = "false") Boolean includeRetired) {
+		List<Configuration> configurations = ddeService.getAllConfigurations(includeRetired);
+		return convertListOfConfigurationsToListOfMaps(configurations);
 	}
 	
 	/**

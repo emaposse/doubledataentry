@@ -70,49 +70,10 @@
                         <th>&nbsp;&nbsp;</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <c:forEach var="configuration" items="${configurations}">
-                    <tr id="config-tr-${configuration.uuid}">
-                        <input type="hidden" name="config${configuration.id}" value="${configuration.uuid}"/>
-                        <td>
-                            <input type="checkbox" name="toBeModified[]" value="${configuration.uuid}"
-                                onclick="toggleRetireButton()" class="form-check"/>
-                        </td>
-                        <td><c:out value="${configuration.htmlForm.form.name}"/></td>
-                        <td><c:out value="${configuration.revision}"/></td>
-                        <td>
-                            <fmt:formatNumber value="${configuration.frequency}" type="percent" var="percentFrequency"/>
-                            <c:choose>
-                                <c:when test="${configuration.retired}">
-                                    <c:out value="${percentFrequency}"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <input type="text" name="config${configuration.id}Frequency" value="${percentFrequency}" class="form-control"/>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td><c:out value="${configuration.dateChanged != null ? configuration.dateChanged : configuration.dateCreated}"/></td>
-                        <td>
-                            <c:choose>
-                            <c:when test="${configuration.published}">
-                                <input type="checkbox" name="published[]" class="form-check" checked value="${configuration.uuid}"/>
-                            </c:when>
-                            <c:otherwise>
-                                <input type="checkbox" name="published[]" class="form-check" value="${configuration.uuid}"/>
-                            </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <c:if test="${configuration.revision > 1 }">
-                                <a>View History</a>
-                            </c:if>
-                        </td>
-                    </tr>
-                    </c:forEach>
-                </tbody>
+                <tbody></tbody>
             </table>
             <button class="btn btn-sm btn-default" onclick="retireConfigurations()" disabled="true" name="retire-button">Retire Selected</button>
-            <button class="btn btn-sm btn-default">Apply Changes</button>
+            <button class="btn btn-sm btn-default" name="apply-changes-button" disabled="true">Apply Changes</button>
             <div id="configurations-retire-reason" style="display:none;" class="top-buffer">
                 <span>Provide Reason</span>
                 <textarea name="retireReason" class="form-control" placeholder="I don't like these configurations"></textarea>
