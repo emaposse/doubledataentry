@@ -13,6 +13,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.doubledataentry.Configuration;
@@ -23,9 +24,11 @@ import org.openmrs.module.doubledataentry.api.dao.ConfigurationDao;
 import org.openmrs.module.doubledataentry.api.dao.DoubleDataEntryDao;
 import org.openmrs.module.htmlformentry.HtmlForm;
 import org.openmrs.module.htmlformentry.HtmlFormEntryService;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -172,23 +175,23 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 	}
 	
 	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public Configuration retireConfiguration(Configuration configuration, String reason) {
 		if (!StringUtils.hasText(reason)) {
 			throw new IllegalArgumentException(messageSourceService.getMessage("general.voidReason.empty"));
 		}
 		
 		if (!configuration.getRetired()) {
-			configuration.setRetired(true);
-			configuration.setRetireReason(reason);
 			return configurationDao.saveConfiguration(configuration);
 		}
 		return configuration;
 	}
 	
 	@Override
+	@Transactional
 	public Configuration retireConfigurationByUuid(String uuid, String reason) {
 		Configuration configuration = configurationDao.getConfiguration(uuid);
 		
-		return retireConfiguration(configuration, reason);
+		return Context.getService(DoubleDataEntryService.class).retireConfiguration(configuration, reason);
 	}
 }

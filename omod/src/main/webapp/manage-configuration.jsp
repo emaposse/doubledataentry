@@ -15,6 +15,11 @@
 <openmrs:htmlInclude file="/moduleResources/doubledataentry/configuration.css"/>
 <openmrs:htmlInclude file="/moduleResources/doubledataentry/configuration.js"/>
 
+<script type="text/javascript">
+    var pageContext = "${pageContext.request.contextPath}";
+    var defaultFrequency = '${defaultFrequency}';
+</script>
+
 <h2><spring:message code="doubledataentry.title" /></h2>
 
 <h4>Frequency Settings</h4><hr/>
@@ -67,10 +72,10 @@
                 </thead>
                 <tbody>
                     <c:forEach var="configuration" items="${configurations}">
-                    <tr>
+                    <tr id="config-tr-${configuration.uuid}">
                         <input type="hidden" name="config${configuration.id}" value="${configuration.uuid}"/>
                         <td>
-                            <input type="checkbox" name="toBeModified[]" value="${configuration.id}"
+                            <input type="checkbox" name="toBeModified[]" value="${configuration.uuid}"
                                 onclick="toggleRetireButton()" class="form-check"/>
                         </td>
                         <td><c:out value="${configuration.htmlForm.form.name}"/></td>
@@ -101,9 +106,11 @@
             <button class="btn btn-sm btn-default">Apply Changes</button>
             <div id="configurations-retire-reason" style="display:none;" class="top-buffer">
                 <span>Provide Reason</span>
-                <textarea name="retireReason" class="form-control">
-                </textarea>
-                <button class="btn btn-sm btn-warning" disabled="true" id="save-retired">Save</button>
+                <textarea name="retireReason" class="form-control" placeholder="I don't like these configurations"></textarea>
+                <button class="btn btn-sm btn-warning" disabled="true" id="save-retired" onclick="saveRetiredConfigurations()">
+                    Save
+                    <img src="${pageContext.request.contextPath}/moduleResources/doubledataentry/images/busy.gif" id="save-retired-busy-image" style="display:none;"/>
+                </button>
             </div>
         </div>
     </fieldset>

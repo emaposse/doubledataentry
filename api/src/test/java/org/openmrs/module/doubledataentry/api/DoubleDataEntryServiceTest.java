@@ -14,6 +14,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -41,6 +42,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -68,6 +71,9 @@ public class DoubleDataEntryServiceTest {
 	
 	@Mock
 	UserService userService;
+	
+	@Mock
+	private DoubleDataEntryService doubleDataEntryService;
 	
 	@Before
 	public void setupMocks() {
@@ -130,34 +136,12 @@ public class DoubleDataEntryServiceTest {
 		Configuration configuration = ddeService.createConfigurationFromMap(confMap);
 	}
 	
-	@Test
-	public void retireConfiguration_shouldRetireConfigurationGivenReason() {
-		Configuration configuration = new Configuration();
-		String reason = "Let us see if this works actually";
-		configuration = ddeService.retireConfiguration(configuration, reason);
-		
-		assertTrue("configuration should be retired", configuration.getRetired());
-		assertEquals("Reason should be the same", reason, configuration.getRetireReason());
-	}
-	
 	@Test(expected = ObjectNotFoundException.class)
 	public void getConfigurationByUuid_shouldThrowExceptionIfConfigurationNotFound() {
 		String uuid = "does-not-exist";
 		when(configurationDao.getConfiguration(uuid)).thenReturn(null);
 		
 		ddeService.getConfigurationByUuid(uuid);
-	}
-	
-	@Test
-	public void retireConfigurationByUuid_shouldRetireTheConfiguration() {
-		String uuid = "configuration-dummy-uuid";
-		String reason = "retire this darn thing!";
-		when(configurationDao.getConfiguration(uuid)).thenReturn(new Configuration());
-		
-		Configuration configuration = ddeService.retireConfigurationByUuid(uuid, reason);
-		
-		assertTrue("The configuration is retired", configuration.getRetired());
-		assertEquals("the reason is set", reason, configuration.getRetireReason());
 	}
 	
 	private Matcher<Configuration> mockedConfiguration() {

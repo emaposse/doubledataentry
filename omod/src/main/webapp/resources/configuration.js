@@ -2,8 +2,6 @@
  * Created by Willa Mhawila on 3/20/17.
  */
 var $j = jQuery.noConflict();
-var pageContext = "${pageContext.request.contextPath}";
-var defaultFrequency = '${defaultFrequency}';
 var formsTobeConfigured = [];
 function doubleDataEntryfetchForms(pageContext, searchText) {
     console.log('fetcher is called');
@@ -49,8 +47,8 @@ function saveConfigurations() {
             // Append to configs
             var configTableBody = $j('#configuration-table > tbody');
             createdConfigs.forEach(function(configuration) {
-                var tableRow = $j('<tr>');
-                var html = '<td><input type="checkbox" name="toBeModified[]" value="' + configuration.id + '" class="form-check"/></td>' +
+                var tableRow = $j('<tr>').attr('id', 'config-tr-' + configuration.uuid);
+                var html = '<td><input type="checkbox" name="toBeModified[]" value="' + configuration.uuid + '" class="form-check"/></td>' +
                     '<td>' + configuration.htmlForm.name + '</td>' +
                     '<td>' + configuration.revision + '</td>' +
                     '<td><input type="text" name="configFrequency[]" value="' + configuration.frequency + '" class="form-control"/></td>';
@@ -128,6 +126,7 @@ function toggleRetireButton() {
 
 function retireConfigurations() {
     toggleRetireReasonTextArea(true);
+    // createRetiredConfigurations();
 }
 
 function toggleRetireReasonTextArea(show) {
@@ -139,8 +138,46 @@ function toggleRetireReasonTextArea(show) {
     }
 }
 
-function saveRetiredConfigurations() {
+function createRetiredConfigurations() {
+    var reason = $j('textarea[name="retireReason"]').val().trim();
+    var checked = $j('input[name="toBeModified[]"]:checked');
 
+    var configMaps = [];
+    for(var i=0; i < checked.length ; i++) {
+        configMaps.push({
+            uuid: $j(checked[i]).val(),
+            reason: reason
+        });
+    }
+
+    return configMaps;
+}
+
+function saveRetiredConfigurations() {
+    var url = pageContext + '/ws/module/doubledataentry/configuration';
+    var configsToRetire = createRetiredConfigurations();
+    $j('#save-retired-busy-image').show();
+    $j.ajax({
+        contentType: 'application/json',
+        type: 'DELETE',
+        url: url,
+        data: JSON.stringify(configsToRetire),
+        success: function() {
+            // Append to configs
+            $j('#save-retired-busy-image').hide();
+            configsToRetire.forEach(function (config) {
+                var selector = '#config-tr-' + config.uuid;
+                $j(selector).remove();
+            });
+
+            //Hide the reason thing
+            toggleRetireButton();
+        },
+        error: function(jqXHR, textStatus, error) {
+            $j('#save-retired-busy-image').hide();
+            console.error('Status:', textStatus, 'Error:', error);
+        }
+    });
 }
 
 $j(document).ready(function() {
@@ -158,7 +195,6 @@ $j(document).ready(function() {
     });
 
     $j('textarea[name="retireReason"]').keyup(function() {
-        console.log('Thamani yake ni:', $j(this).val());
         if($j(this).val().trim().length > 0) {
             $j('#save-retired').prop('disabled',false);
         }

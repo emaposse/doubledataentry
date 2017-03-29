@@ -91,6 +91,14 @@ public class DoubleDataEntryConfigurationController {
 		return convertListOfConfigurationsToListOfMaps(configurations);
 	}
 	
+	@RequestMapping(method = RequestMethod.DELETE)
+	@ResponseBody
+	public void onConfigurationDelete(@RequestBody List<Map> uuidMaps) {
+		for (Map uuidMap : uuidMaps) {
+			ddeService.retireConfigurationByUuid(uuidMap.get("uuid").toString(), uuidMap.get("reason").toString());
+		}
+	}
+	
 	/**
 	 * This class returns the form backing object. This can be a string, a boolean, or a normal java
 	 * pojo. The bean name defined in the ModelAttribute annotation and the type can be just defined
