@@ -92,7 +92,16 @@
                             </c:choose>
                         </td>
                         <td><c:out value="${configuration.dateChanged != null ? configuration.dateChanged : configuration.dateCreated}"/></td>
-                        <td><c:out value="${configuration.published}"/></td>
+                        <td>
+                            <c:choose>
+                            <c:when test="${configuration.published}">
+                                <input type="checkbox" name="published[]" class="form-check" checked value="${configuration.uuid}"/>
+                            </c:when>
+                            <c:otherwise>
+                                <input type="checkbox" name="published[]" class="form-check" value="${configuration.uuid}"/>
+                            </c:otherwise>
+                            </c:choose>
+                        </td>
                         <td>
                             <c:if test="${configuration.revision > 1 }">
                                 <a>View History</a>

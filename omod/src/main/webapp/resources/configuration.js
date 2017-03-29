@@ -1,5 +1,6 @@
 /**
  * Created by Willa Mhawila on 3/20/17.
+ * Depends on variables pageContext & defaultFrequency which are populated via jsp in the including page.
  */
 var $j = jQuery.noConflict();
 var formsTobeConfigured = [];
@@ -39,7 +40,6 @@ function saveConfigurations() {
         url: url,
         data: JSON.stringify(createConfigObjects()),
         success: function(createdConfigs) {
-            console.log("Returned: ", JSON.stringify(createdConfigs, null, 2));
             $j('#unsaved-configuration-table > tbody').empty();
             formsTobeConfigured = [];
             $j('#unsaved-config-container').hide();
@@ -47,11 +47,16 @@ function saveConfigurations() {
             // Append to configs
             var configTableBody = $j('#configuration-table > tbody');
             createdConfigs.forEach(function(configuration) {
+                var frequency = '' + configuration.frequency;
+                if(frequency.indexOf('%') === -1) {
+                    frequency *= 100;
+                    frequency  += '%';
+                }
                 var tableRow = $j('<tr>').attr('id', 'config-tr-' + configuration.uuid);
                 var html = '<td><input type="checkbox" name="toBeModified[]" value="' + configuration.uuid + '" class="form-check"/></td>' +
                     '<td>' + configuration.htmlForm.name + '</td>' +
                     '<td>' + configuration.revision + '</td>' +
-                    '<td><input type="text" name="configFrequency[]" value="' + configuration.frequency + '" class="form-control"/></td>';
+                    '<td><input type="text" name="configFrequency[]" value="' + frequency + '" class="form-control"/></td>';
 
                 if(configuration.dateChanged) {
                     html += '<td>' + (new Date(configuration.dateChanged)).toISOString().replace('T',' ').replace('Z','') + '</td>';
@@ -62,11 +67,11 @@ function saveConfigurations() {
 
                 if(configuration.published) {
                     html += '<td><input type="checkbox" name="published[]" class="form-check" checked ' +
-                        'value="' + configuration.id + '"/></td>';
+                        'value="' + configuration.uuid + '"/></td>';
                 }
                 else {
                     html += '<td><input type="checkbox" name="published[]" class="form-check" ' +
-                        'value="' + configuration.id + '"/></td>';
+                        'value="' + configuration.uuid + '"/></td>';
                 }
 
                 if(configuration.revision > 1){
