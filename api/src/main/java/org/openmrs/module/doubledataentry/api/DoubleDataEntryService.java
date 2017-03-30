@@ -12,6 +12,7 @@ package org.openmrs.module.doubledataentry.api;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.doubledataentry.Configuration;
+import org.openmrs.module.doubledataentry.ConfigurationRevision;
 import org.openmrs.module.doubledataentry.Participant;
 import org.openmrs.module.htmlformentry.HtmlForm;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,9 +47,13 @@ public interface DoubleDataEntryService extends OpenmrsService {
 	
 	public Configuration createConfigurationFromMap(Map<String, Object> configurationMap);
 	
+	public Configuration updateConfigurationFromMap(Map<String, Object> configurationMap);
+	
 	public List<Configuration> createConfigurationsFromMaps(List<Map<String, Object>> configurationMaps);
 	
 	public Configuration retireConfiguration(Configuration configuration, String reason);
 	
 	public Configuration retireConfigurationByUuid(String uuid, String reason);
+	
+	public List<ConfigurationRevision> getConfigurationRevisionsForConfiguration(Configuration configuration);
 }

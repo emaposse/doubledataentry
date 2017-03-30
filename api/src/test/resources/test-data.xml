@@ -15,4 +15,6 @@
                    retired="true" uuid="d9820003-0b38-11e7-b6f1-0242ac110002"/>
     <doubledataentry_configuration_revision id="1" configuration_id="2" start_date="2017-02-20 17:10:09" end_date="2017-03-16 12:12:00"
                             frequency="0.1" />
+    <doubledataentry_configuration_revision id="2" configuration_id="2" start_date="2017-03-16 12:12:00" end_date="2017-03-20 12:45:10"
+                            frequency="0.1" />
 </dataset>

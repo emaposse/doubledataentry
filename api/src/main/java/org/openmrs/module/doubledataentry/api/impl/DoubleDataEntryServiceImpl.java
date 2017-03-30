@@ -17,6 +17,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.doubledataentry.Configuration;
+import org.openmrs.module.doubledataentry.ConfigurationRevision;
 import org.openmrs.module.doubledataentry.DoubleDataEntryConstants;
 import org.openmrs.module.doubledataentry.Participant;
 import org.openmrs.module.doubledataentry.api.DoubleDataEntryService;
@@ -30,6 +31,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -107,6 +109,11 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 	}
 	
 	@Override
+	public List<ConfigurationRevision> getConfigurationRevisionsForConfiguration(Configuration configuration) {
+		return configurationDao.getConfigurationRevisionsForConfiguration(configuration);
+	}
+	
+	@Override
 	public List<Participant> getAllParticipants() {
 		return new ArrayList<Participant>();
 	}
@@ -164,12 +171,53 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 	
 	@Override
 	@Transactional
+	public Configuration updateConfigurationFromMap(Map<String, Object> configurationMap) {
+		String uuid = (String) configurationMap.get("uuid");
+		Configuration configuration = configurationDao.getConfiguration(uuid);
+		
+		Object frequency = configurationMap.get("frequency");
+		ConfigurationRevision revision = null;
+		if (frequency != null) {
+			revision = new ConfigurationRevision();
+			revision.setFrequency(configuration.getFrequency());
+			revision.setEndDate(new Date());
+			ConfigurationRevision lastRevision = configurationDao.getLastRevisionForConfiguration(configuration);
+			
+			if (lastRevision != null) {
+				revision.setStartDate(lastRevision.getEndDate());
+			} else {
+				revision.setStartDate(configuration.getDateCreated());
+			}
+			
+			configuration.setFrequency(Float.valueOf(frequency.toString()));
+		}
+		
+		Object published = configurationMap.get("published");
+		if (published != null) {
+			configuration.setPublished(Boolean.valueOf(published.toString()));
+			
+		}
+		
+		if (revision != null) {
+			configuration.revise();
+			configuration = configurationDao.saveConfiguration(configuration);
+			revision.setConfiguration(configuration);
+			configurationDao.saveConfigurationRevision(revision);
+			
+			return configuration;
+		}
+		
+		return configurationDao.saveConfiguration(configuration);
+	}
+	
+	@Override
+	@Transactional
 	public List<Configuration> createConfigurationsFromMaps(List<Map<String, Object>> configurationMaps) {
 		List<Configuration> configurations = new ArrayList<Configuration>();
 		Configuration configuration = null;
 		for (Map<String, Object> objectMap : configurationMaps) {
 			configuration = createConfigurationFromMap(objectMap);
-			configurations.add(configurationDao.saveConfiguration(configuration));
+			configurations.add(configuration);
 		}
 		return configurations;
 	}

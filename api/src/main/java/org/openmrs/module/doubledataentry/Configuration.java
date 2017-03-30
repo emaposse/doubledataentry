@@ -47,6 +47,10 @@ public class Configuration extends BaseOpenmrsMetadata implements Serializable {
 		this.published = published;
 	}
 	
+	public void revise() {
+		setRevision(getRevision() + 1);
+	}
+	
 	@Override
 	public Integer getId() {
 		return this.id;
@@ -69,7 +73,7 @@ public class Configuration extends BaseOpenmrsMetadata implements Serializable {
 		return revision;
 	}
 	
-	public void revise(Integer revision) {
+	public void setRevision(Integer revision) {
 		this.revision = revision;
 	}
 	

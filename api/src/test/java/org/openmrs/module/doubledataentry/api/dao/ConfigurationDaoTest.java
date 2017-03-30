@@ -13,11 +13,14 @@ package org.openmrs.module.doubledataentry.api.dao;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.module.doubledataentry.Configuration;
+import org.openmrs.module.doubledataentry.ConfigurationRevision;
 import org.openmrs.module.htmlformentry.HtmlForm;
 import org.openmrs.module.htmlformentry.HtmlFormEntryService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import sun.security.krb5.Config;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -81,4 +84,42 @@ public class ConfigurationDaoTest extends BaseModuleContextSensitiveTest {
 		assertNotNull(configurations);
 		assertEquals("size should be 2", 2, configurations.size());
 	}
+	
+	@Test
+	public void getLastRevisionForConfiguration_shouldReturnNullIfNOtRevisedYet() {
+		Configuration configuration = dao.getConfiguration(1);
+		ConfigurationRevision revision = dao.getLastRevisionForConfiguration(configuration);
+		
+		assertNull(revision);
+	}
+	
+	@Test
+	public void getLastRevisionForConfiguration_shouldReturnLastRevision() {
+		ConfigurationRevision revision = dao.getLastRevisionForConfiguration(2);
+		
+		assertNotNull(revision);
+		assertEquals("Should get the correct revision", Integer.valueOf(2), revision.getId());
+	}
+	
+	@Test
+	public void saveConfigurationRevision_shouldSaveConfigurationToDatabase() {
+		ConfigurationRevision revision = new ConfigurationRevision();
+		revision.setFrequency(0.4f);
+		revision.setStartDate(new Date());
+		revision.setEndDate(new Date());
+		
+		revision = dao.saveConfigurationRevision(revision);
+		
+		assertNotNull("id should be set", revision.getId());
+	}
+	
+	@Test
+	public void getConfigurationRevisionsForConfiguration_shouldReturnTheListOfAllRevision() {
+		Configuration configuration = dao.getConfiguration(2);
+		List<ConfigurationRevision> revisions = dao.getConfigurationRevisionsForConfiguration(configuration);
+		
+		assertNotNull(revisions);
+		assertEquals("Should have 2 revisions", 2, revisions.size());
+	}
+	
 }

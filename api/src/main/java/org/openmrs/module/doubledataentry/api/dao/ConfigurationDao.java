@@ -10,11 +10,14 @@
 package org.openmrs.module.doubledataentry.api.dao;
 
 import org.hibernate.Criteria;
+import org.hibernate.ObjectNotFoundException;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.doubledataentry.Configuration;
+import org.openmrs.module.doubledataentry.ConfigurationRevision;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -52,5 +55,33 @@ public class ConfigurationDao {
 		}
 		
 		return (List<Configuration>) criteria.list();
+	}
+	
+	public ConfigurationRevision getLastRevisionForConfiguration(Configuration configuration) {
+		Criteria criteria = getSession().createCriteria(ConfigurationRevision.class)
+		        .add(Restrictions.eq("configuration", configuration)).addOrder(Order.desc("startDate")).setMaxResults(1);
+		
+		return (ConfigurationRevision) criteria.uniqueResult();
+	}
+	
+	public ConfigurationRevision getLastRevisionForConfiguration(Integer id) {
+		Configuration configuration = getConfiguration(id);
+		if (configuration == null) {
+			throw new ObjectNotFoundException(Configuration.class, "No configuration with id " + id);
+		}
+		
+		return getLastRevisionForConfiguration(configuration);
+	}
+	
+	public ConfigurationRevision saveConfigurationRevision(ConfigurationRevision revision) {
+		getSession().saveOrUpdate(revision);
+		return revision;
+	}
+	
+	public List<ConfigurationRevision> getConfigurationRevisionsForConfiguration(Configuration configuration) {
+		Criteria criteria = getSession().createCriteria(ConfigurationRevision.class).add(
+		    Restrictions.eq("configuration", configuration));
+		
+		return (List<ConfigurationRevision>) criteria.list();
 	}
 }
