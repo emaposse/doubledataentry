@@ -223,6 +223,16 @@ public class DoubleDataEntryServiceImpl extends BaseOpenmrsService implements Do
 	}
 	
 	@Override
+	@Transactional
+	public List<Configuration> updateConfigurationsFromMaps(List<Map<String, Object>> valueMaps) {
+		List<Configuration> configurations = new ArrayList<Configuration>();
+		for (Map<String, Object> objectMap : valueMaps) {
+			configurations.add(updateConfigurationFromMap(objectMap));
+		}
+		return configurations;
+	}
+	
+	@Override
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public Configuration retireConfiguration(Configuration configuration, String reason) {
 		if (!StringUtils.hasText(reason)) {

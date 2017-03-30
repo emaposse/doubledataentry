@@ -11,6 +11,7 @@ package org.openmrs.module.doubledataentry.web.controller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xpath.operations.Bool;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
@@ -87,8 +88,15 @@ public class DoubleDataEntryConfigurationController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	public Object onPostConfigurations(@RequestBody List confMaps) {
-		List<Configuration> configurations = ddeService.createConfigurationsFromMaps(confMaps);
-		return convertListOfConfigurationsToListOfMaps(configurations);
+		List<Configuration> configurations = null;
+		Object uuid = ((Map) confMaps.get(0)).get("uuid");
+		if (uuid == null) {
+			configurations = ddeService.createConfigurationsFromMaps(confMaps);
+			return convertListOfConfigurationsToListOfMaps(configurations);
+		} else {
+			configurations = ddeService.updateConfigurationsFromMaps(confMaps);
+			return convertListOfConfigurationsToListOfMaps(configurations);
+		}
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE)

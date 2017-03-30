@@ -47,7 +47,10 @@
                 </thead>
                 <tbody></tbody>
             </table>
-            <button class="btn btn-sm btn-default" onclick="saveConfigurations()">Save Configuration(s)</button>
+            <button class="btn btn-sm btn-default" onclick="saveConfigurations()">
+                Save Configuration(s)
+            <img src="${pageContext.request.contextPath}/moduleResources/doubledataentry/images/busy.gif" id="save-configuration-busy-image" style="display:none;"/>
+            </button>
         </div>
     </fieldset>
 
@@ -73,7 +76,10 @@
                 <tbody></tbody>
             </table>
             <button class="btn btn-sm btn-default" onclick="retireConfigurations()" disabled="true" name="retire-button">Retire Selected</button>
-            <button class="btn btn-sm btn-default" name="apply-changes-button" disabled="true">Apply Changes</button>
+            <button class="btn btn-sm btn-default" name="apply-changes-button" disabled="true" onclick="saveModifiedConfigurations()">
+                Apply Changes
+                <img src="${pageContext.request.contextPath}/moduleResources/doubledataentry/images/busy.gif" id="apply-changes-busy-image" style="display:none;"/>
+            </button>
             <div id="configurations-retire-reason" style="display:none;" class="top-buffer">
                 <span>Provide Reason</span>
                 <textarea name="retireReason" class="form-control" placeholder="I don't like these configurations"></textarea>

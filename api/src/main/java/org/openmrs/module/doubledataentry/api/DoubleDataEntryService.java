@@ -49,6 +49,8 @@ public interface DoubleDataEntryService extends OpenmrsService {
 	
 	public Configuration updateConfigurationFromMap(Map<String, Object> configurationMap);
 	
+	public List<Configuration> updateConfigurationsFromMaps(List<Map<String, Object>> valueMaps);
+	
 	public List<Configuration> createConfigurationsFromMaps(List<Map<String, Object>> configurationMaps);
 	
 	public Configuration retireConfiguration(Configuration configuration, String reason);

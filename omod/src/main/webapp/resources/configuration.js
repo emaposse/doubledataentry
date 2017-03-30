@@ -76,22 +76,8 @@ function constructExistingConfigurationsTable(createdConfigs) {
                 'value="' + configuration.uuid + '" onclick="configChangesWatcher()"/></td>';
         }
 
-        // var checkbox = $j('<input>').attr('type','checkbox').attr('name', 'published[]').val(configuration.uuid);
-        //
-        // checkbox.click(function() {
-        //     var boxes = $j('input[name="published[]"]');
-        //     var frequencies = $j('input[name="configFrequency[]"');
-        //     toggleApplyChangesButton(boxes, frequencies);
-        // });
-        //
-        // if(configuration.published) {
-        //     checkbox.prop('checked', true);
-        // }
-        //
-        // html += $j('<td>').append(checkbox).html();
-
         if(configuration.revision > 1){
-            html += '<td><a>View History</a><td>';
+            html += '<td><a>View History</a></td>';
         }
         else {
             html += '<td></td>';
@@ -107,13 +93,17 @@ function constructExistingConfigurationsTable(createdConfigs) {
 }
 
 function saveConfigurations() {
+    $j('#save-configuration-busy-image').show();
     var url = pageContext + '/ws/module/doubledataentry/configuration';
     $j.ajax({
         contentType: 'application/json',
         type: 'POST',
         url: url,
         data: JSON.stringify(createConfigObjects()),
-        success: constructExistingConfigurationsTable,
+        success: function (configs) {
+            constructExistingConfigurationsTable(configs);
+            $j('#save-configuration-busy-image').hide();
+        },
         error: function(jqXHR, textStatus, error) {
             console.log('Status ni:', textStatus, 'Error ni:', error);
         }
@@ -196,7 +186,6 @@ function configChangesWatcher() {
 
 function retireConfigurations() {
     toggleRetireReasonTextArea(true);
-    // createRetiredConfigurations();
 }
 
 function toggleRetireReasonTextArea(show) {
@@ -221,6 +210,76 @@ function createRetiredConfigurations() {
     }
 
     return configMaps;
+}
+
+function createConfigurationsToBeModified(checkBoxElems, frequencyInputElems) {
+    var configsToModify = [];
+
+    for(var i=0; i<checkBoxElems.length; i++) {
+        var box = freq = {};
+        box.uuid = $j(checkBoxElems[i]).val();
+        box.published = $j(checkBoxElems[i]).prop('checked');
+
+        freq.uuid = $j(frequencyInputElems[i]).parent().parent().attr('id').replace('config-tr-', '');
+        freq.value = $j(frequencyInputElems[i]).val();
+
+        var currentPublished = configsMap.get(box.uuid).published;
+        var currentFrequency = configsMap.get(freq.uuid).frequency;
+        var convertedFrequency = convertPercent(freq.value);
+
+        if(currentFrequency !== convertedFrequency) {
+            configsToModify.push({
+                uuid: freq.uuid,
+                frequency: convertedFrequency,
+            });
+        }
+
+        if(currentPublished !== box.published) {
+            var matched = configsToModify.find(function (config) {
+                return box.uuid === config.uuid;
+            });
+
+            if(matched) {
+                matched.published = box.published;
+            }
+            else {
+                configsToModify.push({
+                    uuid: box.uuid,
+                    published: box.published,
+                });
+            }
+        }
+    }
+    return configsToModify;
+}
+
+function updateConfigurationValuesAndViewAfterAjax(updatedConfigs) {
+    updatedConfigs.forEach(function (updated) {
+        configsMap.set(updated.uuid, updated);
+    });
+    $j('button[name="apply-changes-button"]').prop('disabled', true);
+}
+
+function saveModifiedConfigurations() {
+    $j('#apply-changes-busy-image').show();
+    var checkboxes = $j('input[name="published[]"]');
+    var frequencies = $j('input[name="configFrequency[]"');
+    var toModify = createConfigurationsToBeModified(checkboxes, frequencies);
+
+    var url = pageContext + '/ws/module/doubledataentry/configuration';
+    $j.ajax({
+        contentType: 'application/json',
+        type: 'POST',
+        url: url,
+        data: JSON.stringify(toModify),
+        success: function (configs) {
+            $j('#apply-changes-busy-image').hide();
+            updateConfigurationValuesAndViewAfterAjax(configs);
+        },
+        error: function(jqXHR, textStatus, error) {
+            console.log('Status ni:', textStatus, 'Error ni:', error);
+        }
+    });
 }
 
 function saveRetiredConfigurations() {
